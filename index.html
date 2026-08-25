@@ -26,6 +26,12 @@
   @media (max-width: 700px) {
     header { padding: 14px 18px !important; gap: 10px !important; }
     .nav-link { display: none !important; }
+    .turnero-wrap { padding: 56px 20px !important; }
+    .turnero-content { padding: 26px 20px 32px !important; }
+    .slots-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
+    .slot-btn { padding: 11px 0 !important; font-size: 13px !important; }
+    .day-btn { width: 68px !important; padding: 11px 0 !important; }
+    .svc-btn { padding: 13px 16px !important; }
   }
 </style>
 </helmet>
@@ -103,7 +109,7 @@
   </section>
 
   <section id="turnero" style="border-top: 1px solid #211E1B; background: #0E0D0C">
-    <div style="max-width: 1180px; margin: 0 auto; padding: 100px 40px">
+    <div class="turnero-wrap" style="max-width: 1180px; margin: 0 auto; padding: 100px 40px">
       <p style="margin: 0 0 14px; font-size: 11px; letter-spacing: .34em; text-transform: uppercase; color: #C9A97E">02 — Turnero</p>
       <h2 style="margin: 0 0 12px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: clamp(38px, 5vw, 62px); line-height: 1">Reservá tu turno</h2>
       <p style="margin: 0 0 56px; max-width: 520px; font-size: 15px; line-height: 1.6; color: #8E8880">Los horarios que ves están libres ahora mismo. Cuando alguien reserva, el horario desaparece para el resto.</p>
@@ -122,14 +128,14 @@
           </sc-for>
         </aside>
 
-        <div style="background: #0B0B0A; padding: 40px 38px 46px; min-height: 520px; min-width: 0">
+        <div class="turnero-content" style="background: #0B0B0A; padding: 40px 38px 46px; min-height: 520px; min-width: 0">
 
           <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
             <div style="animation: laFade .35s ease both">
               <p style="margin: 0 0 18px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">Paso 1 · Servicio</p>
               <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 42px">
                 <sc-for list="{{ services }}" as="s" hint-placeholder-count="3">
-                  <button type="button" onClick="{{ s.select }}" style="display: flex; flex-direction: column; gap: 6px; align-items: flex-start; padding: 16px 22px; border: 1px solid {{ s.border }}; background: {{ s.bg }}; color: #EDE9E1; border-radius: 2px; cursor: pointer; text-align: left">
+                  <button type="button" class="svc-btn" onClick="{{ s.select }}" style="display: flex; flex-direction: column; gap: 6px; align-items: flex-start; padding: 16px 22px; border: 1px solid {{ s.border }}; background: {{ s.bg }}; color: #EDE9E1; border-radius: 2px; cursor: pointer; text-align: left">
                     <span style="font-size: 15px; letter-spacing: .02em">{{ s.name }}</span>
                     <span style="font-size: 12px; color: #8E8880">{{ s.duration }} · {{ s.price }}</span>
                   </button>
@@ -139,7 +145,7 @@
               <p style="margin: 0 0 18px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">Paso 1 · Día y hora</p>
               <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 26px">
                 <sc-for list="{{ days }}" as="d" hint-placeholder-count="5">
-                  <button type="button" onClick="{{ d.select }}" style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 78px; padding: 14px 0; border: 1px solid {{ d.border }}; background: {{ d.bg }}; color: {{ d.fg }}; border-radius: 2px; cursor: pointer">
+                  <button type="button" class="day-btn" onClick="{{ d.select }}" style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 78px; padding: 14px 0; border: 1px solid {{ d.border }}; background: {{ d.bg }}; color: {{ d.fg }}; border-radius: 2px; cursor: pointer">
                     <span style="font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">{{ d.dow }}</span>
                     <span style="font-family: 'Instrument Serif', serif; font-size: 26px; line-height: 1">{{ d.dayNum }}</span>
                     <span style="font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #6E675F">{{ d.month }}</span>
@@ -147,9 +153,9 @@
                 </sc-for>
               </div>
 
-              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(94px, 1fr)); gap: 8px">
+              <div class="slots-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(94px, 1fr)); gap: 8px">
                 <sc-for list="{{ slots }}" as="t" hint-placeholder-count="20">
-                  <button type="button" onClick="{{ t.select }}" disabled="{{ t.taken }}" style="padding: 14px 0; border: 1px solid {{ t.border }}; background: {{ t.bg }}; color: {{ t.fg }}; border-radius: 2px; font-size: 14px; letter-spacing: .06em; cursor: {{ t.cursor }}; text-decoration: {{ t.strike }}">{{ t.label }}</button>
+                  <button type="button" class="slot-btn" onClick="{{ t.select }}" disabled="{{ t.taken }}" style="padding: 14px 0; border: 1px solid {{ t.border }}; background: {{ t.bg }}; color: {{ t.fg }}; border-radius: 2px; font-size: 14px; letter-spacing: .06em; cursor: {{ t.cursor }}; text-decoration: {{ t.strike }}">{{ t.label }}</button>
                 </sc-for>
               </div>
 
