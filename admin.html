@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   html, body { margin: 0; padding: 0; background: #0B0B0A; }
   * { box-sizing: border-box; }
@@ -26,19 +26,19 @@
 </style>
 </helmet>
 
-<div style="background: #0B0B0A; color: #EDE9E1; font-family: 'DM Sans', system-ui, sans-serif; font-weight: 300; -webkit-font-smoothing: antialiased; min-height: 100vh; overflow-x: hidden; max-width: 100vw">
+<div style="background: #0B0B0A; color: #EDE9E1; font-family: 'Archivo', system-ui, sans-serif; font-weight: 300; -webkit-font-smoothing: antialiased; min-height: 100vh; overflow-x: hidden; max-width: 100vw">
 
   <sc-if value="{{ locked }}" hint-placeholder-val="{{ true }}">
     <div style="min-height: 100vh; display: grid; place-items: center; padding: 40px 20px">
       <div style="width: 100%; max-width: 380px; animation: boFade .4s ease both">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 46px">
-          <span style="display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #3A342D; border-radius: 3px; background: linear-gradient(160deg, #16150F, #0B0B0A); font-family: 'Instrument Serif', serif; font-size: 18px; color: #C9A97E">LA</span>
+          <span style="display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #3A342D; border-radius: 3px; background: linear-gradient(160deg, #16150F, #0B0B0A); font-family: 'Archivo Black', sans-serif; font-size: 18px; color: #C9A97E">LA</span>
           <span style="display: flex; flex-direction: column; line-height: 1.05">
-            <span style="font-family: 'Instrument Serif', serif; font-size: 20px">LAestudio</span>
+            <span style="font-family: 'Archivo Black', sans-serif; font-size: 20px">LAestudio</span>
             <span style="font-size: 9.5px; letter-spacing: .28em; text-transform: uppercase; color: #8E8880; margin-top: 3px; white-space: nowrap">Panel interno</span>
           </span>
         </div>
-        <h1 style="margin: 0 0 10px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 36px; line-height: 1.05">Ingresar</h1>
+        <h1 style="margin: 0 0 10px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 36px; line-height: 1.05">Ingresar</h1>
         <p style="margin: 0 0 32px; font-size: 14px; color: #8E8880">Acceso exclusivo del peluquero.</p>
         <div style="display: grid; gap: 14px">
           <label style="display: flex; flex-direction: column; gap: 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
@@ -61,8 +61,8 @@
 
       <header style="position: sticky; top: 0; z-index: 30; background: rgba(11,11,10,.94); backdrop-filter: blur(12px); border-bottom: 1px solid #211E1B">
         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 20px">
-          <span style="display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #3A342D; border-radius: 3px; background: linear-gradient(160deg, #16150F, #0B0B0A); font-family: 'Instrument Serif', serif; font-size: 15px; color: #C9A97E">LA</span>
-          <span style="font-family: 'Instrument Serif', serif; font-size: 17px; margin-right: 4px">Panel</span>
+          <span style="display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #3A342D; border-radius: 3px; background: linear-gradient(160deg, #16150F, #0B0B0A); font-family: 'Archivo Black', sans-serif; font-size: 15px; color: #C9A97E">LA</span>
+          <span style="font-family: 'Archivo Black', sans-serif; font-size: 17px; margin-right: 4px">Panel</span>
           <span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px; border: 1px solid #2A2621; border-radius: 40px; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880; white-space: nowrap">
             <span style="display: block; width: 6px; height: 6px; border-radius: 50%; background: #7E9A6F; animation: boPulse 1.8s ease-in-out infinite"></span>
             En vivo
@@ -90,7 +90,7 @@
         <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
           <div style="background: #0B0B0A; padding: 4px 18px 4px 0">
             <p style="margin: 0 0 8px; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #6E675F">{{ k.label }}</p>
-            <p style="margin: 0; font-family: 'Instrument Serif', serif; font-size: 30px; line-height: 1; color: {{ k.color }}">{{ k.value }}</p>
+            <p style="margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 30px; line-height: 1; color: {{ k.color }}">{{ k.value }}</p>
           </div>
         </sc-for>
       </div>
@@ -102,7 +102,7 @@
             <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 22px">
               <button type="button" onClick="{{ prevDay }}" style="width: 38px; height: 38px; border: 1px solid #2A2621; background: transparent; color: #B7B0A6; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="border-color: #C9A97E; color: #C9A97E">‹</button>
               <button type="button" onClick="{{ nextDay }}" style="width: 38px; height: 38px; border: 1px solid #2A2621; background: transparent; color: #B7B0A6; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="border-color: #C9A97E; color: #C9A97E">›</button>
-              <h2 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 28px; line-height: 1; text-transform: capitalize">{{ cursorLabel }}</h2>
+              <h2 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 28px; line-height: 1; text-transform: capitalize">{{ cursorLabel }}</h2>
               <div style="margin-left: auto; display: flex; gap: 2px; border: 1px solid #2A2621; border-radius: 2px; padding: 2px">
                 <button type="button" onClick="{{ setDayMode }}" style="padding: 10px 16px; border: 0; background: {{ dayModeBg }}; color: {{ dayModeFg }}; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer">Día</button>
                 <button type="button" onClick="{{ setWeekMode }}" style="padding: 10px 16px; border: 0; background: {{ weekModeBg }}; color: {{ weekModeFg }}; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer">Semana</button>
@@ -150,7 +150,7 @@
                     <sc-for list="{{ weekDays }}" as="w" hint-placeholder-count="5">
                       <div style="padding: 12px 10px; border-left: 1px solid #1B1815; text-align: center">
                         <p style="margin: 0 0 4px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">{{ w.dow }}</p>
-                        <p style="margin: 0; font-family: 'Instrument Serif', serif; font-size: 20px; line-height: 1; color: {{ w.fg }}">{{ w.dayNum }}</p>
+                        <p style="margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 20px; line-height: 1; color: {{ w.fg }}">{{ w.dayNum }}</p>
                         <p style="margin: 5px 0 0; font-size: 10.5px; color: #6E675F">{{ w.libres }} libres</p>
                       </div>
                     </sc-for>
@@ -174,7 +174,7 @@
 
         <sc-if value="{{ isPendientes }}" hint-placeholder-val="{{ false }}">
           <div style="animation: boFade .3s ease both">
-            <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Comprobantes por revisar</h2>
+            <h2 style="margin: 0 0 8px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 30px; line-height: 1">Comprobantes por revisar</h2>
             <p style="margin: 0 0 28px; font-size: 14px; color: #8E8880; max-width: 560px">Al confirmar se envía automáticamente el WhatsApp al cliente con día, hora, servicio y dirección.</p>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px">
               <sc-for list="{{ pendientes }}" as="p" hint-placeholder-count="3">
@@ -183,7 +183,7 @@
                     <span style="display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border: 1px solid {{ p.accent }}; border-radius: 40px; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: {{ p.accent }}; white-space: nowrap">{{ p.estadoLabel }}</span>
                     <span style="font-size: 11.5px; color: #6E675F">{{ p.origen }}</span>
                   </div>
-                  <p style="margin: 0 0 6px; font-family: 'Instrument Serif', serif; font-size: 24px; line-height: 1.1">{{ p.cliente }}</p>
+                  <p style="margin: 0 0 6px; font-family: 'Archivo Black', sans-serif; font-size: 24px; line-height: 1.1">{{ p.cliente }}</p>
                   <p style="margin: 0 0 18px; font-size: 13.5px; color: #8E8880">{{ p.detalle }}</p>
                   <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: #211E1B; border: 1px solid #211E1B; margin-bottom: 18px">
                     <div style="padding: 12px 14px; background: #0B0B0A"><p style="margin: 0 0 5px; font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: #6E675F">Seña</p><p style="margin: 0; font-size: 14px; color: #C9A97E">{{ p.senia }}</p></div>
@@ -204,13 +204,13 @@
 
         <sc-if value="{{ isDisponibilidad }}" hint-placeholder-val="{{ false }}">
           <div style="animation: boFade .3s ease both">
-            <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Disponibilidad</h2>
+            <h2 style="margin: 0 0 8px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 30px; line-height: 1">Disponibilidad</h2>
             <p style="margin: 0 0 22px; font-size: 14px; color: #8E8880; max-width: 560px">Bloqueá un día entero o horarios puntuales. Lo bloqueado desaparece del turnero público al instante.</p>
 
             <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px">
               <button type="button" onClick="{{ prevDay }}" style="width: 38px; height: 38px; border: 1px solid #2A2621; background: transparent; color: #B7B0A6; border-radius: 2px; cursor: pointer; font-size: 15px; flex: 0 0 auto" style-hover="border-color: #C9A97E; color: #C9A97E">‹</button>
               <button type="button" onClick="{{ nextDay }}" style="width: 38px; height: 38px; border: 1px solid #2A2621; background: transparent; color: #B7B0A6; border-radius: 2px; cursor: pointer; font-size: 15px; flex: 0 0 auto" style-hover="border-color: #C9A97E; color: #C9A97E">›</button>
-              <h3 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 24px; line-height: 1; text-transform: capitalize">{{ cursorLabel }}</h3>
+              <h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 24px; line-height: 1; text-transform: capitalize">{{ cursorLabel }}</h3>
             </div>
 
             <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 20px">
@@ -240,7 +240,7 @@
         <sc-if value="{{ isConfig }}" hint-placeholder-val="{{ false }}">
           <div style="animation: boFade .3s ease both; display: grid; gap: 34px; max-width: 720px">
             <div>
-              <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Horario de atención</h2>
+              <h2 style="margin: 0 0 8px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 30px; line-height: 1">Horario de atención</h2>
               <p style="margin: 0 0 22px; font-size: 14px; color: #8E8880">Define entre qué horas se puede sacar turno y qué días de la semana atendés.</p>
               <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 20px">
                 <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
@@ -294,7 +294,7 @@
             </div>
 
             <div>
-              <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Pagos</h2>
+              <h2 style="margin: 0 0 8px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 30px; line-height: 1">Pagos</h2>
               <p style="margin: 0 0 18px; font-size: 14px; color: #8E8880">Alias para que los clientes transfieran la seña. Se actualiza al instante en la web pública.</p>
               <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880; max-width: 320px">
                 Alias
@@ -303,7 +303,7 @@
             </div>
 
             <div>
-              <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Servicios</h2>
+              <h2 style="margin: 0 0 8px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 30px; line-height: 1">Servicios</h2>
               <p style="margin: 0 0 22px; font-size: 14px; color: #8E8880">Editá nombre, duración o precio, o quitá un servicio. Los cambios se ven al instante en la web pública.</p>
               <div style="display: grid; gap: 10px; margin-bottom: 22px">
                 <sc-for list="{{ cfgServices }}" as="sv" hint-placeholder-count="3">
@@ -346,7 +346,7 @@
             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px">
               <div>
                 <p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: #C9A97E">Carga manual</p>
-                <h3 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 28px; line-height: 1.05">Turno sin seña</h3>
+                <h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 28px; line-height: 1.05">Turno sin seña</h3>
               </div>
               <button type="button" onClick="{{ closeManual }}" style="width: 34px; height: 34px; border: 1px solid #2A2621; background: transparent; color: #8E8880; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="color: #EDE9E1">✕</button>
             </div>
@@ -402,7 +402,7 @@
             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px">
               <div>
                 <p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: #C9A97E">Seguridad</p>
-                <h3 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 28px; line-height: 1.05">Cambiar contraseña</h3>
+                <h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 28px; line-height: 1.05">Cambiar contraseña</h3>
               </div>
               <button type="button" onClick="{{ closePw }}" style="width: 34px; height: 34px; border: 1px solid #2A2621; background: transparent; color: #8E8880; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="color: #EDE9E1">✕</button>
             </div>
