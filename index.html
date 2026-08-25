@@ -289,7 +289,27 @@
     <span>LAestudio · Guiñazú, Córdoba</span>
     <span>Martes a sábado · 10 a 20 h</span>
     <a href="{{ waPlain }}" target="_blank" rel="noopener">{{ waPretty }}</a>
+    <span style="display: flex; gap: 18px">
+      <button type="button" onClick="{{ openPrivacy }}" style="background: none; border: 0; padding: 0; margin: 0; color: #6E675F; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer" style-hover="color: #C9A97E">Política de privacidad</button>
+      <button type="button" onClick="{{ openTerms }}" style="background: none; border: 0; padding: 0; margin: 0; color: #6E675F; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer" style-hover="color: #C9A97E">Términos de uso</button>
+    </span>
   </footer>
+
+  <sc-if value="{{ legalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 80; background: rgba(5,5,4,.78); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 20px">
+      <div style="width: 100%; max-width: 640px; max-height: 86vh; overflow-y: auto; background: #0B0B0A; border: 1px solid #2A2621; padding: 34px 30px">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px">
+          <h3 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 28px; line-height: 1.05; text-transform: none; letter-spacing: normal">{{ legalTitle }}</h3>
+          <button type="button" onClick="{{ closeLegal }}" style="width: 34px; height: 34px; flex: 0 0 auto; border: 1px solid #2A2621; background: transparent; color: #8E8880; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="color: #EDE9E1">✕</button>
+        </div>
+        <div style="display: grid; gap: 14px">
+          <sc-for list="{{ legalParas }}" as="p" hint-placeholder-count="6">
+            <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #B7B0A6; text-transform: none; letter-spacing: normal">{{ p.text }}</p>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
 
   <a href="#turnero" style="position: fixed; right: 26px; bottom: 26px; z-index: 60; display: inline-flex; align-items: center; gap: 12px; padding: 17px 26px; background: #C9A97E; color: #0B0B0A; border-radius: 2px; font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; box-shadow: 0 18px 44px rgba(0,0,0,.6)" style-hover="background: #E4CDA8; color: #0B0B0A">
     <span style="display: block; width: 7px; height: 7px; border-radius: 50%; background: #0B0B0A"></span>
@@ -311,8 +331,26 @@ const SERVICES = [
 
 const money = n => "$" + n.toLocaleString("es-AR");
 
+const PRIVACY_PARAS = [
+  "En LAestudio pedimos únicamente los datos necesarios para gestionar tu turno: nombre y número de WhatsApp. No solicitamos ni almacenamos datos de tarjetas ni información bancaria en este sitio.",
+  "Los datos que cargás al reservar (servicio, día, horario, nombre y WhatsApp) se guardan de forma local en tu navegador y se usan para coordinar tu turno y contactarte por WhatsApp. No los compartimos con terceros ni los usamos con fines publicitarios.",
+  "El comprobante de la seña se envía por WhatsApp directamente a LAestudio y se utiliza únicamente para confirmar tu reserva.",
+  "No enviamos correos electrónicos de ningún tipo: toda la comunicación sobre tu turno (confirmación, cambios o cancelación) se realiza por WhatsApp.",
+  "Podés solicitar en cualquier momento que eliminemos tus datos de contacto escribiéndonos por WhatsApp.",
+  "Esta política puede actualizarse ocasionalmente; los cambios se van a reflejar en esta misma página."
+];
+
+const TERMS_PARAS = [
+  "Al reservar un turno en LAestudio aceptás estas condiciones de uso del sitio y del servicio de reserva online.",
+  "Para confirmar un turno es necesario transferir una seña equivalente al 50% del valor del servicio, usando el alias indicado, y enviar el comprobante por WhatsApp. El turno queda confirmado recién cuando LAestudio valida ese comprobante.",
+  "Si necesitás cancelar o reprogramar tu turno, avisanos por WhatsApp con la mayor anticipación posible.",
+  "LAestudio se reserva el derecho de reprogramar un turno ante un imprevisto, avisando siempre por WhatsApp a la brevedad.",
+  "Los precios publicados pueden actualizarse sin previo aviso; el precio vigente es el que se muestra al momento de reservar.",
+  "El uso de este sitio implica la aceptación de estos términos y de la política de privacidad."
+];
+
 class Component extends DCLogic {
-  state = { step: 1, svc: null, day: 0, slot: null, nombre: "", tel: "", taken: {}, copied: false };
+  state = { step: 1, svc: null, day: 0, slot: null, nombre: "", tel: "", taken: {}, copied: false, legal: null };
 
   componentDidMount() {
     let saved = {};
@@ -453,7 +491,13 @@ class Component extends DCLogic {
       goStep3: () => { if (ready2) this.setState({ step: 3 }); },
       goStep4: () => { if (day && s.slot) this.persist(day.key, s.slot); this.setState({ step: 4 }); },
       back1: () => this.setState({ step: 1 }),
-      reset: () => this.setState({ step: 1, svc: null, slot: null, nombre: "", tel: "" })
+      reset: () => this.setState({ step: 1, svc: null, slot: null, nombre: "", tel: "" }),
+      legalOpen: !!s.legal,
+      legalTitle: s.legal === "privacy" ? "Política de privacidad" : "Términos de uso",
+      legalParas: (s.legal === "privacy" ? PRIVACY_PARAS : TERMS_PARAS).map(t => ({ text: t })),
+      openPrivacy: () => this.setState({ legal: "privacy" }),
+      openTerms: () => this.setState({ legal: "terms" }),
+      closeLegal: () => this.setState({ legal: null })
     };
   }
 }
