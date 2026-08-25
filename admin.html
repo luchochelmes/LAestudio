@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #0B0B0A; }
+  * { box-sizing: border-box; }
+  a { color: #C9A97E; text-decoration: none; }
+  a:hover { color: #E4CDA8; }
+  input, button, select, textarea { font-family: inherit; }
+  ::selection { background: #C9A97E; color: #0B0B0A; }
+  @keyframes boFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes boPulse { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #2A2621; border-radius: 8px; }
+</style>
+</helmet>
+
+<div style="background: #0B0B0A; color: #EDE9E1; font-family: 'DM Sans', system-ui, sans-serif; font-weight: 300; -webkit-font-smoothing: antialiased; min-height: 100vh">
+
+  <sc-if value="{{ locked }}" hint-placeholder-val="{{ true }}">
+    <div style="min-height: 100vh; display: grid; place-items: center; padding: 40px 20px">
+      <div style="width: 100%; max-width: 380px; animation: boFade .4s ease both">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 46px">
+          <span style="display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #3A342D; border-radius: 3px; background: linear-gradient(160deg, #16150F, #0B0B0A); font-family: 'Instrument Serif', serif; font-size: 18px; color: #C9A97E">LA</span>
+          <span style="display: flex; flex-direction: column; line-height: 1.05">
+            <span style="font-family: 'Instrument Serif', serif; font-size: 20px">LAestudio</span>
+            <span style="font-size: 9.5px; letter-spacing: .28em; text-transform: uppercase; color: #8E8880; margin-top: 3px; white-space: nowrap">Panel interno</span>
+          </span>
+        </div>
+        <h1 style="margin: 0 0 10px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 36px; line-height: 1.05">Ingresar</h1>
+        <p style="margin: 0 0 32px; font-size: 14px; color: #8E8880">Acceso exclusivo del peluquero.</p>
+        <div style="display: grid; gap: 14px">
+          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+            Usuario
+            <input type="text" value="{{ user }}" onChange="{{ setUser }}" placeholder="laestudio" style="padding: 15px 16px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+            Contraseña
+            <input type="password" value="{{ pass }}" onChange="{{ setPass }}" onKeyDown="{{ onLoginKey }}" placeholder="••••••••" style="padding: 15px 16px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+          </label>
+          <button type="button" onClick="{{ login }}" style="margin-top: 8px; padding: 17px; border: 0; background: #C9A97E; color: #0B0B0A; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Entrar</button>
+          <p style="margin: 6px 0 0; min-height: 18px; font-size: 12.5px; color: #C9A97E">{{ loginError }}</p>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ authed }}" hint-placeholder-val="{{ false }}">
+    <div style="min-height: 100vh; display: flex; flex-direction: column">
+
+      <header style="position: sticky; top: 0; z-index: 30; background: rgba(11,11,10,.94); backdrop-filter: blur(12px); border-bottom: 1px solid #211E1B">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 20px">
+          <span style="display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #3A342D; border-radius: 3px; background: linear-gradient(160deg, #16150F, #0B0B0A); font-family: 'Instrument Serif', serif; font-size: 15px; color: #C9A97E">LA</span>
+          <span style="font-family: 'Instrument Serif', serif; font-size: 17px; margin-right: 4px">Panel</span>
+          <span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px; border: 1px solid #2A2621; border-radius: 40px; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880; white-space: nowrap">
+            <span style="display: block; width: 6px; height: 6px; border-radius: 50%; background: #7E9A6F; animation: boPulse 1.8s ease-in-out infinite"></span>
+            En vivo
+          </span>
+          <span style="font-size: 12px; color: #6E675F">{{ lastSync }}</span>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+            <button type="button" onClick="{{ openManual }}" style="padding: 12px 18px; border: 1px solid #3A342D; background: transparent; color: #C9A97E; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; white-space: nowrap" style-hover="border-color: #C9A97E">+ Turno manual</button>
+            <button type="button" onClick="{{ logout }}" style="padding: 12px 16px; border: 1px solid #211E1B; background: transparent; color: #6E675F; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer" style-hover="color: #EDE9E1">Salir</button>
+          </div>
+        </div>
+        <nav style="display: flex; gap: 2px; padding: 0 12px; overflow-x: auto">
+          <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+            <button type="button" onClick="{{ t.go }}" style="flex: 0 0 auto; display: inline-flex; align-items: center; gap: 9px; padding: 14px 16px; border: 0; border-bottom: 2px solid {{ t.line }}; background: transparent; color: {{ t.fg }}; font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer">
+              {{ t.label }}
+              <sc-if value="{{ t.showCount }}" hint-placeholder-val="{{ false }}">
+                <span style="display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 40px; background: #C9A97E; color: #0B0B0A; font-size: 11px; font-weight: 500">{{ t.count }}</span>
+              </sc-if>
+            </button>
+          </sc-for>
+        </nav>
+      </header>
+
+      <div style="padding: 18px 20px 26px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: #1B1815; border-bottom: 1px solid #211E1B">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div style="background: #0B0B0A; padding: 4px 18px 4px 0">
+            <p style="margin: 0 0 8px; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #6E675F">{{ k.label }}</p>
+            <p style="margin: 0; font-family: 'Instrument Serif', serif; font-size: 30px; line-height: 1; color: {{ k.color }}">{{ k.value }}</p>
+          </div>
+        </sc-for>
+      </div>
+
+      <main style="flex: 1; padding: 26px 20px 90px">
+
+        <sc-if value="{{ isTurnero }}" hint-placeholder-val="{{ true }}">
+          <div style="animation: boFade .3s ease both">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 22px">
+              <button type="button" onClick="{{ prevDay }}" style="width: 38px; height: 38px; border: 1px solid #2A2621; background: transparent; color: #B7B0A6; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="border-color: #C9A97E; color: #C9A97E">‹</button>
+              <button type="button" onClick="{{ nextDay }}" style="width: 38px; height: 38px; border: 1px solid #2A2621; background: transparent; color: #B7B0A6; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="border-color: #C9A97E; color: #C9A97E">›</button>
+              <h2 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 28px; line-height: 1; text-transform: capitalize">{{ cursorLabel }}</h2>
+              <div style="margin-left: auto; display: flex; gap: 2px; border: 1px solid #2A2621; border-radius: 2px; padding: 2px">
+                <button type="button" onClick="{{ setDayMode }}" style="padding: 10px 16px; border: 0; background: {{ dayModeBg }}; color: {{ dayModeFg }}; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer">Día</button>
+                <button type="button" onClick="{{ setWeekMode }}" style="padding: 10px 16px; border: 0; background: {{ weekModeBg }}; color: {{ weekModeFg }}; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer">Semana</button>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 22px">
+              <sc-for list="{{ legend }}" as="l" hint-placeholder-count="4">
+                <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: #8E8880">
+                  <span style="display: block; width: 10px; height: 10px; border-radius: 2px; background: {{ l.color }}"></span>
+                  {{ l.label }}
+                </span>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ isDayMode }}" hint-placeholder-val="{{ true }}">
+              <div style="border: 1px solid #211E1B; background: #0E0D0C">
+                <sc-for list="{{ dayRows }}" as="r" hint-placeholder-count="20">
+                  <div style="display: flex; align-items: stretch; gap: 0; border-bottom: 1px solid #1B1815; background: {{ r.rowBg }}">
+                    <div style="flex: 0 0 78px; padding: 15px 16px; font-size: 13.5px; color: #8E8880; border-right: 1px solid #1B1815; letter-spacing: .04em">{{ r.time }}</div>
+                    <div style="flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 16px; border-left: 3px solid {{ r.accent }}">
+                      <span style="font-size: 14.5px; color: {{ r.nameFg }}">{{ r.cliente }}</span>
+                      <span style="font-size: 12.5px; color: #8E8880">{{ r.servicio }}</span>
+                      <span style="margin-left: auto; display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border: 1px solid {{ r.accent }}; border-radius: 40px; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: {{ r.accent }}; white-space: nowrap">{{ r.estadoLabel }}</span>
+                      <sc-if value="{{ r.canConfirm }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ r.confirm }}" style="padding: 9px 14px; border: 0; background: #C9A97E; color: #0B0B0A; border-radius: 2px; font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Confirmar</button>
+                      </sc-if>
+                      <sc-if value="{{ r.canBlock }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ r.toggleBlock }}" style="margin-left: auto; padding: 9px 14px; border: 1px solid #2A2621; background: transparent; color: #6E675F; border-radius: 2px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #C9A97E; color: #C9A97E">{{ r.blockLabel }}</button>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isWeekMode }}" hint-placeholder-val="{{ false }}">
+              <div style="overflow-x: auto; border: 1px solid #211E1B">
+                <div style="min-width: 640px">
+                  <div style="display: grid; grid-template-columns: 62px repeat(5, 1fr); background: #0E0D0C; border-bottom: 1px solid #211E1B">
+                    <div></div>
+                    <sc-for list="{{ weekDays }}" as="w" hint-placeholder-count="5">
+                      <div style="padding: 12px 10px; border-left: 1px solid #1B1815; text-align: center">
+                        <p style="margin: 0 0 4px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">{{ w.dow }}</p>
+                        <p style="margin: 0; font-family: 'Instrument Serif', serif; font-size: 20px; line-height: 1; color: {{ w.fg }}">{{ w.dayNum }}</p>
+                        <p style="margin: 5px 0 0; font-size: 10.5px; color: #6E675F">{{ w.libres }} libres</p>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-for list="{{ weekRows }}" as="wr" hint-placeholder-count="20">
+                    <div style="display: grid; grid-template-columns: 62px repeat(5, 1fr); border-bottom: 1px solid #141210">
+                      <div style="padding: 7px 8px; font-size: 11px; color: #6E675F; background: #0E0D0C">{{ wr.time }}</div>
+                      <sc-for list="{{ wr.cells }}" as="c" hint-placeholder-count="5">
+                        <div style="padding: 6px 8px; border-left: 1px solid #141210; background: {{ c.bg }}; min-height: 34px; display: flex; align-items: center; gap: 7px; overflow: hidden">
+                          <span style="flex: 0 0 auto; display: block; width: 6px; height: 6px; border-radius: 50%; background: {{ c.dot }}"></span>
+                          <span style="font-size: 11.5px; color: {{ c.fg }}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ c.label }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isPendientes }}" hint-placeholder-val="{{ false }}">
+          <div style="animation: boFade .3s ease both">
+            <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Comprobantes por revisar</h2>
+            <p style="margin: 0 0 28px; font-size: 14px; color: #8E8880; max-width: 560px">Al confirmar se envía automáticamente el WhatsApp al cliente con día, hora, servicio y dirección.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px">
+              <sc-for list="{{ pendientes }}" as="p" hint-placeholder-count="3">
+                <div style="border: 1px solid #2A2621; background: #0E0D0C; padding: 22px 22px 20px; border-left: 3px solid {{ p.accent }}">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px">
+                    <span style="display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border: 1px solid {{ p.accent }}; border-radius: 40px; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: {{ p.accent }}; white-space: nowrap">{{ p.estadoLabel }}</span>
+                    <span style="font-size: 11.5px; color: #6E675F">{{ p.origen }}</span>
+                  </div>
+                  <p style="margin: 0 0 6px; font-family: 'Instrument Serif', serif; font-size: 24px; line-height: 1.1">{{ p.cliente }}</p>
+                  <p style="margin: 0 0 18px; font-size: 13.5px; color: #8E8880">{{ p.detalle }}</p>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: #211E1B; border: 1px solid #211E1B; margin-bottom: 18px">
+                    <div style="padding: 12px 14px; background: #0B0B0A"><p style="margin: 0 0 5px; font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: #6E675F">Seña</p><p style="margin: 0; font-size: 14px; color: #C9A97E">{{ p.senia }}</p></div>
+                    <div style="padding: 12px 14px; background: #0B0B0A"><p style="margin: 0 0 5px; font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: #6E675F">WhatsApp</p><p style="margin: 0; font-size: 14px"><a href="{{ p.waCliente }}" target="_blank" rel="noopener">{{ p.tel }}</a></p></div>
+                  </div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 10px">
+                    <button type="button" onClick="{{ p.confirm }}" style="flex: 1 1 140px; padding: 14px; border: 0; background: #C9A97E; color: #0B0B0A; border-radius: 2px; font-size: 11.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Confirmar y avisar</button>
+                    <button type="button" onClick="{{ p.reject }}" style="flex: 0 1 auto; padding: 14px 16px; border: 1px solid #2A2621; background: transparent; color: #8E8880; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #A9705E; color: #C98E7E">Rechazar y liberar</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ noPendientes }}" hint-placeholder-val="{{ false }}">
+              <div style="border: 1px dashed #2A2621; padding: 46px 24px; text-align: center; color: #6E675F; font-size: 14px">No hay comprobantes esperando revisión.</div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDisponibilidad }}" hint-placeholder-val="{{ false }}">
+          <div style="animation: boFade .3s ease both">
+            <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Disponibilidad</h2>
+            <p style="margin: 0 0 28px; font-size: 14px; color: #8E8880; max-width: 560px">Bloqueá un día entero o horarios puntuales. Lo bloqueado desaparece del turnero público al instante.</p>
+            <div style="display: grid; gap: 14px">
+              <sc-for list="{{ dispDays }}" as="d" hint-placeholder-count="6">
+                <div style="border: 1px solid #211E1B; background: #0E0D0C; padding: 18px 20px">
+                  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 14px">
+                    <span style="font-family: 'Instrument Serif', serif; font-size: 21px; text-transform: capitalize">{{ d.label }}</span>
+                    <span style="font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: #8E8880">{{ d.libres }} libres · {{ d.ocupados }} ocupados · {{ d.bloqueados }} bloqueados</span>
+                    <button type="button" onClick="{{ d.toggleAll }}" style="margin-left: auto; padding: 11px 16px; border: 1px solid #2A2621; background: transparent; color: #B7B0A6; border-radius: 2px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #C9A97E; color: #C9A97E">{{ d.allLabel }}</button>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px">
+                    <sc-for list="{{ d.slots }}" as="sl" hint-placeholder-count="20">
+                      <button type="button" onClick="{{ sl.toggle }}" disabled="{{ sl.busy }}" style="padding: 10px 0; border: 1px solid {{ sl.border }}; background: {{ sl.bg }}; color: {{ sl.fg }}; border-radius: 2px; font-size: 12px; cursor: {{ sl.cursor }}; text-decoration: {{ sl.strike }}">{{ sl.time }}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+
+      </main>
+
+      <sc-if value="{{ manualOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position: fixed; inset: 0; z-index: 60; background: rgba(5,5,4,.78); backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center; padding: 20px">
+          <div style="width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; background: #0B0B0A; border: 1px solid #2A2621; padding: 28px 26px 26px; animation: boFade .28s ease both">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px">
+              <div>
+                <p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: #C9A97E">Carga manual</p>
+                <h3 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 28px; line-height: 1.05">Turno sin seña</h3>
+              </div>
+              <button type="button" onClick="{{ closeManual }}" style="width: 34px; height: 34px; border: 1px solid #2A2621; background: transparent; color: #8E8880; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="color: #EDE9E1">✕</button>
+            </div>
+            <div style="display: grid; gap: 12px">
+              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                Nombre
+                <input type="text" value="{{ mNombre }}" onChange="{{ setMNombre }}" placeholder="Cliente" style="padding: 14px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                WhatsApp
+                <input type="tel" value="{{ mTel }}" onChange="{{ setMTel }}" placeholder="351 000 0000" style="padding: 14px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                Servicio
+                <select value="{{ mSvc }}" onChange="{{ setMSvc }}" style="padding: 14px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none">
+                  <option value="corte">Corte · 30 min · $15.000</option>
+                  <option value="barba">Barba · 30 min · $5.000</option>
+                  <option value="corte-barba">Corte + barba · 30 min · $18.000</option>
+                </select>
+              </label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+                <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                  Día
+                  <select value="{{ mDay }}" onChange="{{ setMDay }}" style="padding: 14px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none">
+                    <sc-for list="{{ manualDays }}" as="md" hint-placeholder-count="6">
+                      <option value="{{ md.key }}">{{ md.label }}</option>
+                    </sc-for>
+                  </select>
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                  Horario
+                  <select value="{{ mTime }}" onChange="{{ setMTime }}" style="padding: 14px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none">
+                    <sc-for list="{{ manualTimes }}" as="mt" hint-placeholder-count="12">
+                      <option value="{{ mt.value }}">{{ mt.label }}</option>
+                    </sc-for>
+                  </select>
+                </label>
+              </div>
+              <label style="display: flex; align-items: center; gap: 12px; padding: 15px 16px; border: 1px solid #2A2621; background: #0E0D0C; font-size: 13.5px; color: #B7B0A6; cursor: pointer">
+                <input type="checkbox" checked="{{ mConfirmado }}" onChange="{{ setMConfirmado }}" style="width: 17px; height: 17px; accent-color: #C9A97E">
+                Marcar como confirmado (sin seña)
+              </label>
+              <p style="margin: 0; min-height: 16px; font-size: 12.5px; color: #C9A97E">{{ manualError }}</p>
+              <button type="button" onClick="{{ saveManual }}" style="padding: 17px; border: 0; background: #C9A97E; color: #0B0B0A; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Guardar turno</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+        <div style="position: fixed; left: 20px; right: 20px; bottom: 20px; z-index: 70; display: flex; justify-content: center; pointer-events: none">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 15px 20px; background: #16150F; border: 1px solid #3A342D; border-left: 3px solid #C9A97E; border-radius: 2px; font-size: 13.5px; color: #EDE9E1; box-shadow: 0 18px 44px rgba(0,0,0,.6); animation: boFade .25s ease both; max-width: 520px">
+            <span style="display: block; width: 7px; height: 7px; border-radius: 50%; background: #C9A97E; flex: 0 0 auto"></span>
+            {{ toast }}
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const WA_LOCAL = "5493512524591";
+const DIRECCION = "Guiñazú, Córdoba";
+const DOW = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+const MONTH = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const SVC = {
+  "corte": { name: "Corte", price: 15000 },
+  "barba": { name: "Barba", price: 5000 },
+  "corte-barba": { name: "Corte + barba", price: 18000 }
+};
+const EST = {
+  pendiente: { label: "Pendiente de pago", color: "#C9A97E" },
+  comprobante: { label: "Comprobante enviado", color: "#B7B0A6" },
+  confirmado: { label: "Confirmado", color: "#7E9A6F" },
+  cancelado: { label: "Cancelado", color: "#5E564E" }
+};
+const NAMES = ["Nicolás Ferreyra", "Brian Ludueña", "Matías Sosa", "Lucas Peralta", "Ariel Gómez", "Joaquín Ríos", "Emiliano Vega", "Franco Molina", "Damián Ávila", "Iván Cáceres", "Tomás Bustos", "Gonzalo Ponce"];
+const IDS = ["corte", "barba", "corte-barba"];
+
+const money = n => "$" + n.toLocaleString("es-AR");
+const key = d => d.toISOString().slice(0, 10);
+const times = () => { const o = []; for (let h = 10; h < 20; h++) { o.push(h + ":00"); o.push(h + ":30"); } return o; };
+
+function bizDays(from, count, dir) {
+  const out = [], d = new Date(from);
+  d.setHours(0, 0, 0, 0);
+  while (out.length < count) {
+    d.setDate(d.getDate() + dir);
+    if (d.getDay() >= 2 && d.getDay() <= 6) out.push(new Date(d));
+  }
+  return dir < 0 ? out.reverse() : out;
+}
+
+function seed() {
+  const list = [];
+  const past = bizDays(new Date(), 8, -1);
+  const future = bizDays(new Date(), 8, 1);
+  past.forEach((d, i) => {
+    times().forEach((t, j) => {
+      if ((d.getDate() * 3 + j * 7 + i) % 5 === 0) {
+        const n = (d.getDate() + j) % NAMES.length;
+        list.push({ id: "s" + i + "-" + j, dayKey: key(d), time: t, cliente: NAMES[n], tel: "351 " + (200 + n) + " " + (1000 + j * 7),
+          svc: IDS[(i + j) % 3], estado: (d.getDate() + j) % 9 === 0 ? "cancelado" : "confirmado", origen: (i + j) % 4 === 0 ? "Manual" : "Web" });
+      }
+    });
+  });
+  const PLAN = [
+    [[0, "confirmado"], [3, "comprobante"], [5, "confirmado"], [9, "pendiente"], [12, "comprobante"], [15, "confirmado"], [18, "confirmado"]],
+    [[1, "confirmado"], [4, "comprobante"], [8, "confirmado"], [11, "pendiente"], [16, "confirmado"]],
+    [[2, "confirmado"], [6, "comprobante"], [10, "confirmado"], [14, "confirmado"], [19, "pendiente"]],
+    [[0, "confirmado"], [7, "confirmado"], [13, "confirmado"], [17, "confirmado"]],
+    [[5, "confirmado"], [8, "confirmado"], [16, "confirmado"]],
+    [[2, "confirmado"], [11, "confirmado"], [18, "confirmado"]],
+    [[4, "confirmado"], [13, "confirmado"]],
+    [[6, "confirmado"], [15, "confirmado"]]
+  ];
+  future.forEach((d, i) => {
+    const plan = PLAN[i] || [];
+    plan.forEach((p, idx) => {
+      const j = p[0], t = times()[j];
+      const n = (i * 7 + idx) % NAMES.length;
+      list.push({ id: "f" + i + "-" + j, dayKey: key(d), time: t, cliente: NAMES[n],
+        tel: "351 " + (200 + n) + " " + (1000 + j * 7), svc: IDS[(i + idx) % 3],
+        estado: p[1], origen: (i + idx) % 5 === 0 ? "Manual" : "Web" });
+    });
+  });
+  return list;
+}
+
+class Component extends DCLogic {
+  state = {
+    authed: false, user: "", pass: "", loginError: "",
+    tab: "turnero", mode: "day", cursor: 0,
+    turnos: [], bloqueos: {}, toast: "",
+    manualOpen: false, mNombre: "", mTel: "", mSvc: "corte", mDay: "", mTime: "10:00", mConfirmado: true, manualError: "",
+    lastSync: "recién"
+  };
+
+  componentDidMount() {
+    this.setState({ turnos: seed().concat(this.fromWeb()), bloqueos: this.readLS("laestudio.bloqueos", {}) });
+    this.poll = setInterval(() => this.sync(), 4000);
+    this.onStorage = () => this.sync();
+    window.addEventListener("storage", this.onStorage);
+  }
+  componentWillUnmount() { clearInterval(this.poll); window.removeEventListener("storage", this.onStorage); }
+
+  readLS(k, fb) { try { return JSON.parse(localStorage.getItem(k) || "null") || fb; } catch (e) { return fb; } }
+  writeLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  fromWeb() {
+    return this.readLS("laestudio.turnos", []).map(t => ({
+      id: t.id, dayKey: t.dayKey, time: t.time, cliente: t.cliente || "Sin nombre",
+      tel: t.tel || "—", svc: t.svc || "corte", estado: t.estado || "comprobante", origen: "Web"
+    }));
+  }
+
+  sync() {
+    const web = this.fromWeb();
+    this.setState(s => {
+      const have = {};
+      s.turnos.forEach(t => { have[t.id] = true; });
+      const nuevos = web.filter(t => !have[t.id]);
+      const st = { lastSync: "actualizado " + new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }), bloqueos: this.readLS("laestudio.bloqueos", s.bloqueos) };
+      if (nuevos.length) {
+        st.turnos = s.turnos.concat(nuevos);
+        st.toast = "Nueva reserva desde la web: " + nuevos[0].cliente + " · " + nuevos[0].time + " h";
+        clearTimeout(this._tt);
+        this._tt = setTimeout(() => this.setState({ toast: "" }), 6000);
+      }
+      return st;
+    });
+  }
+
+  flash(msg) {
+    this.setState({ toast: msg });
+    clearTimeout(this._tt);
+    this._tt = setTimeout(() => this.setState({ toast: "" }), 5000);
+  }
+
+  freeSlot(dayKey, time) {
+    const taken = this.readLS("laestudio.taken", {});
+    taken[dayKey] = (taken[dayKey] || []).filter(t => t !== time);
+    this.writeLS("laestudio.taken", taken);
+  }
+  holdSlot(dayKey, time) {
+    const taken = this.readLS("laestudio.taken", {});
+    taken[dayKey] = (taken[dayKey] || []).concat([time]);
+    this.writeLS("laestudio.taken", taken);
+  }
+
+  setEstado(id, estado) {
+    this.setState(s => ({ turnos: s.turnos.map(t => t.id === id ? Object.assign({}, t, { estado: estado }) : t) }));
+  }
+
+  confirmar(t) {
+    const d = new Date(t.dayKey + "T00:00:00");
+    const label = DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
+    const msg = "Hola " + t.cliente.split(" ")[0] + "! Tu turno en LAestudio quedó confirmado: " + SVC[t.svc].name +
+      ", " + label + " a las " + t.time + " h. Dirección: " + DIRECCION + ". Te esperamos.";
+    const tel = (t.tel || "").replace(/\D/g, "");
+    const to = tel.length >= 10 ? "549" + tel.slice(-10) : WA_LOCAL;
+    window.open("https://wa.me/" + to + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+    this.setEstado(t.id, "confirmado");
+    this.holdSlot(t.dayKey, t.time);
+    this.flash("Turno confirmado · WhatsApp enviado a " + t.cliente);
+  }
+
+  rechazar(t) {
+    this.setEstado(t.id, "cancelado");
+    this.freeSlot(t.dayKey, t.time);
+    this.flash("Turno rechazado · " + t.time + " h liberado en la web");
+  }
+
+  toggleBloqueo(dayKey, time) {
+    this.setState(s => {
+      const b = Object.assign({}, s.bloqueos);
+      const arr = (b[dayKey] || []).slice();
+      const i = arr.indexOf(time);
+      if (i > -1) { arr.splice(i, 1); this.freeSlot(dayKey, time); }
+      else { arr.push(time); this.holdSlot(dayKey, time); }
+      b[dayKey] = arr;
+      this.writeLS("laestudio.bloqueos", b);
+      return { bloqueos: b };
+    });
+  }
+
+  toggleDia(dayKey, allBlocked) {
+    this.setState(s => {
+      const b = Object.assign({}, s.bloqueos);
+      const busy = {};
+      s.turnos.forEach(t => { if (t.dayKey === dayKey && t.estado !== "cancelado") busy[t.time] = true; });
+      const libres = times().filter(t => !busy[t]);
+      if (allBlocked) { b[dayKey] = []; libres.forEach(t => this.freeSlot(dayKey, t)); }
+      else { b[dayKey] = libres; libres.forEach(t => this.holdSlot(dayKey, t)); }
+      this.writeLS("laestudio.bloqueos", b);
+      return { bloqueos: b };
+    });
+    this.flash(allBlocked ? "Día liberado" : "Día bloqueado en la web pública");
+  }
+
+  renderVals() {
+    const s = this.state;
+    const future = bizDays(new Date(), 6, 1);
+    const cursor = future[Math.min(s.cursor, future.length - 1)] || future[0];
+    const cursorKey = key(cursor);
+    const bl = k => s.bloqueos[k] || [];
+    const activos = s.turnos.filter(t => t.estado !== "cancelado");
+    const byDay = k => activos.filter(t => t.dayKey === k);
+    const at = (k, t) => byDay(k).find(x => x.time === t);
+    const pendientes = s.turnos.filter(t => t.estado === "comprobante");
+    const dayLabel = d => DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
+
+    const hoyKey = key(future[0]);
+    const kpis = [
+      { label: "Turnos " + DOW[future[0].getDay()], value: byDay(hoyKey).length, color: "#EDE9E1" },
+      { label: "Por revisar", value: pendientes.length, color: "#C9A97E" },
+      { label: "Sin señar", value: s.turnos.filter(t => t.estado === "pendiente").length, color: "#B7B0A6" },
+      { label: "Ingreso confirmado", value: money(s.turnos.filter(t => t.estado === "confirmado" && t.dayKey >= hoyKey).reduce((a, t) => a + SVC[t.svc].price, 0)), color: "#7E9A6F" }
+    ];
+
+    const tabs = [
+      { id: "turnero", label: "Turnero" },
+      { id: "pendientes", label: "Comprobantes", count: pendientes.length },
+      { id: "disponibilidad", label: "Disponibilidad" }
+    ].map(t => ({
+      label: t.label, count: t.count, showCount: !!t.count,
+      line: s.tab === t.id ? "#C9A97E" : "transparent",
+      fg: s.tab === t.id ? "#EDE9E1" : "#6E675F",
+      go: () => this.setState({ tab: t.id })
+    }));
+
+    const dayRows = times().map(t => {
+      const turno = at(cursorKey, t);
+      const blocked = bl(cursorKey).indexOf(t) > -1;
+      const est = turno ? EST[turno.estado] : null;
+      return {
+        time: t,
+        rowBg: turno ? "#0E0D0C" : blocked ? "#0A0908" : "transparent",
+        accent: turno ? est.color : blocked ? "#2A2621" : "#161412",
+        cliente: turno ? turno.cliente : blocked ? "Bloqueado" : "Libre",
+        nameFg: turno ? "#EDE9E1" : "#4E4740",
+        servicio: turno ? SVC[turno.svc].name + " · " + money(SVC[turno.svc].price) : "",
+        estadoLabel: turno ? est.label : "",
+        canConfirm: !!(turno && turno.estado === "comprobante"),
+        canBlock: !turno,
+        blockLabel: blocked ? "Desbloquear" : "Bloquear",
+        confirm: () => { if (turno) this.confirmar(turno); },
+        toggleBlock: () => this.toggleBloqueo(cursorKey, t)
+      };
+    });
+
+    const week = bizDays(new Date(), 5, 1);
+    const weekDays = week.map((d, i) => {
+      const k = key(d);
+      return { dow: DOW[d.getDay()], dayNum: d.getDate(), fg: k === cursorKey ? "#C9A97E" : "#EDE9E1",
+        libres: times().length - byDay(k).length - bl(k).length };
+    });
+    const weekRows = times().map(t => ({
+      time: t,
+      cells: week.map(d => {
+        const k = key(d), turno = at(k, t), blocked = bl(k).indexOf(t) > -1;
+        const est = turno ? EST[turno.estado] : null;
+        return {
+          bg: turno ? "#131211" : blocked ? "#0C0B0A" : "transparent",
+          dot: turno ? est.color : blocked ? "#2A2621" : "#1B1815",
+          fg: turno ? "#B7B0A6" : "#3A342D",
+          label: turno ? turno.cliente.split(" ")[0] + " · " + SVC[turno.svc].name : blocked ? "bloqueado" : "libre"
+        };
+      })
+    }));
+
+    const dispDays = future.map(d => {
+      const k = key(d), busy = {};
+      byDay(k).forEach(t => { busy[t.time] = true; });
+      const blocked = bl(k);
+      const libres = times().filter(t => !busy[t] && blocked.indexOf(t) < 0);
+      const allBlocked = libres.length === 0 && blocked.length > 0;
+      return {
+        label: dayLabel(d), libres: libres.length, ocupados: Object.keys(busy).length, bloqueados: blocked.length,
+        allLabel: allBlocked ? "Liberar día" : "Bloquear día",
+        toggleAll: () => this.toggleDia(k, allBlocked),
+        slots: times().map(t => {
+          const isBusy = !!busy[t], isBlocked = blocked.indexOf(t) > -1;
+          return {
+            time: t, busy: isBusy,
+            border: isBusy ? "#1B1815" : isBlocked ? "#3A342D" : "#2A2621",
+            bg: isBusy ? "#0A0908" : isBlocked ? "#211E1B" : "#0E0D0C",
+            fg: isBusy ? "#3A342D" : isBlocked ? "#8E8880" : "#EDE9E1",
+            cursor: isBusy ? "not-allowed" : "pointer",
+            strike: isBlocked ? "line-through" : "none",
+            toggle: () => { if (!isBusy) this.toggleBloqueo(k, t); }
+          };
+        })
+      };
+    });
+
+    const manualDays = future.map(d => ({ key: key(d), label: dayLabel(d) }));
+    const mDayKey = s.mDay || (manualDays[0] && manualDays[0].key) || "";
+    const busyManual = {};
+    byDay(mDayKey).forEach(t => { busyManual[t.time] = true; });
+    const manualTimes = times().filter(t => !busyManual[t]).map(t => ({ value: t, label: t + " h" }));
+
+    return {
+      locked: !s.authed, authed: s.authed,
+      user: s.user, pass: s.pass, loginError: s.loginError,
+      setUser: e => this.setState({ user: e.target.value }),
+      setPass: e => this.setState({ pass: e.target.value }),
+      onLoginKey: e => { if (e.key === "Enter") this.setState({ authed: true, loginError: "" }); },
+      login: () => {
+        if (!s.user.trim() || !s.pass.trim()) this.setState({ loginError: "Ingresá usuario y contraseña." });
+        else this.setState({ authed: true, loginError: "" });
+      },
+      logout: () => this.setState({ authed: false, pass: "" }),
+      lastSync: s.lastSync,
+      tabs: tabs, kpis: kpis,
+      isTurnero: s.tab === "turnero", isPendientes: s.tab === "pendientes",
+      isDisponibilidad: s.tab === "disponibilidad",
+      cursorLabel: dayLabel(cursor),
+      prevDay: () => this.setState(st => ({ cursor: Math.max(0, st.cursor - 1) })),
+      nextDay: () => this.setState(st => ({ cursor: Math.min(5, st.cursor + 1) })),
+      isDayMode: s.mode === "day", isWeekMode: s.mode === "week",
+      setDayMode: () => this.setState({ mode: "day" }),
+      setWeekMode: () => this.setState({ mode: "week" }),
+      dayModeBg: s.mode === "day" ? "#C9A97E" : "transparent",
+      dayModeFg: s.mode === "day" ? "#0B0B0A" : "#8E8880",
+      weekModeBg: s.mode === "week" ? "#C9A97E" : "transparent",
+      weekModeFg: s.mode === "week" ? "#0B0B0A" : "#8E8880",
+      legend: Object.keys(EST).map(k => ({ label: EST[k].label, color: EST[k].color })),
+      dayRows: dayRows, weekDays: weekDays, weekRows: weekRows, dispDays: dispDays,
+      pendientes: pendientes.map(t => {
+        const d = new Date(t.dayKey + "T00:00:00");
+        const tel = (t.tel || "").replace(/\D/g, "");
+        return {
+          cliente: t.cliente, tel: t.tel, origen: t.origen,
+          estadoLabel: EST[t.estado].label, accent: EST[t.estado].color,
+          detalle: SVC[t.svc].name + " · " + dayLabel(d) + " · " + t.time + " h",
+          senia: money(Math.round(SVC[t.svc].price / 2)),
+          waCliente: "https://wa.me/" + (tel.length >= 10 ? "549" + tel.slice(-10) : WA_LOCAL),
+          confirm: () => this.confirmar(t),
+          reject: () => this.rechazar(t)
+        };
+      }),
+      noPendientes: pendientes.length === 0,
+      manualOpen: s.manualOpen,
+      openManual: () => this.setState({ manualOpen: true, mDay: mDayKey, manualError: "" }),
+      closeManual: () => this.setState({ manualOpen: false }),
+      mNombre: s.mNombre, mTel: s.mTel, mSvc: s.mSvc, mDay: mDayKey, mTime: s.mTime, mConfirmado: s.mConfirmado,
+      manualError: s.manualError, manualDays: manualDays, manualTimes: manualTimes,
+      setMNombre: e => this.setState({ mNombre: e.target.value }),
+      setMTel: e => this.setState({ mTel: e.target.value }),
+      setMSvc: e => this.setState({ mSvc: e.target.value }),
+      setMDay: e => this.setState({ mDay: e.target.value }),
+      setMTime: e => this.setState({ mTime: e.target.value }),
+      setMConfirmado: e => this.setState({ mConfirmado: e.target.checked }),
+      saveManual: () => {
+        if (!s.mNombre.trim()) { this.setState({ manualError: "Falta el nombre del cliente." }); return; }
+        if (at(mDayKey, s.mTime)) { this.setState({ manualError: "Ese horario ya está ocupado." }); return; }
+        const t = { id: "m" + Date.now(), dayKey: mDayKey, time: s.mTime, cliente: s.mNombre.trim(),
+          tel: s.mTel.trim() || "—", svc: s.mSvc, estado: s.mConfirmado ? "confirmado" : "pendiente", origen: "Manual" };
+        this.setState(st => ({ turnos: st.turnos.concat([t]), manualOpen: false, mNombre: "", mTel: "", manualError: "" }));
+        this.holdSlot(mDayKey, s.mTime);
+        this.flash("Turno manual cargado · " + t.cliente + " " + t.time + " h");
+      },
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
