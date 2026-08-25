@@ -130,6 +130,9 @@
                       <sc-if value="{{ r.canConfirm }}" hint-placeholder-val="{{ false }}">
                         <button type="button" onClick="{{ r.confirm }}" style="padding: 9px 14px; border: 0; background: #C9A97E; color: #0B0B0A; border-radius: 2px; font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Confirmar</button>
                       </sc-if>
+                      <sc-if value="{{ r.canCancel }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ r.cancel }}" style="padding: 9px 14px; border: 1px solid #2A2621; background: transparent; color: #C98E7E; border-radius: 2px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #A9705E">Cancelar turno</button>
+                      </sc-if>
                       <sc-if value="{{ r.canBlock }}" hint-placeholder-val="{{ false }}">
                         <button type="button" onClick="{{ r.toggleBlock }}" style="margin-left: auto; padding: 9px 14px; border: 1px solid #2A2621; background: transparent; color: #6E675F; border-radius: 2px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #C9A97E; color: #C9A97E">{{ r.blockLabel }}</button>
                       </sc-if>
@@ -512,6 +515,20 @@ class Component extends DCLogic {
     this.flash("Turno rechazado · " + t.time + " h liberado en la web");
   }
 
+  cancelar(t) {
+    if (!window.confirm("¿Cancelar el turno de " + t.cliente + " (" + t.time + " h)?")) return;
+    const d = new Date(t.dayKey + "T00:00:00");
+    const label = DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
+    const msg = "Hola " + t.cliente.split(" ")[0] + "! Te avisamos que tu turno en LAestudio del " + label +
+      " a las " + t.time + " h fue cancelado. Cualquier consulta escribinos por acá.";
+    const tel = (t.tel || "").replace(/\D/g, "");
+    const to = tel.length >= 10 ? "549" + tel.slice(-10) : WA_LOCAL;
+    window.open("https://wa.me/" + to + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+    this.setEstado(t.id, "cancelado");
+    this.freeSlot(t.dayKey, t.time);
+    this.flash("Turno cancelado · WhatsApp enviado a " + t.cliente);
+  }
+
   toggleBloqueo(dayKey, time) {
     this.setState(s => {
       const b = Object.assign({}, s.bloqueos);
@@ -583,9 +600,11 @@ class Component extends DCLogic {
         servicio: turno ? SVC[turno.svc].name + " · " + money(SVC[turno.svc].price) : "",
         estadoLabel: turno ? est.label : "",
         canConfirm: !!(turno && turno.estado === "comprobante"),
+        canCancel: !!turno,
         canBlock: !turno,
         blockLabel: blocked ? "Desbloquear" : "Bloquear",
         confirm: () => { if (turno) this.confirmar(turno); },
+        cancel: () => { if (turno) this.cancelar(turno); },
         toggleBlock: () => this.toggleBloqueo(cursorKey, t)
       };
     });
