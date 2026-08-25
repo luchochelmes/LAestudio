@@ -405,7 +405,7 @@ class Component extends DCLogic {
   }
 
   defaultConfig() {
-    return { services: SERVICES, hourStart: 10, hourEnd: 20, days: [2, 3, 4, 5, 6], breakEnabled: false, breakStart: 13, breakEnd: 15 };
+    return { services: SERVICES, hourStart: 10, hourEnd: 20, days: [2, 3, 4, 5, 6], breakEnabled: false, breakStart: 13, breakEnd: 15, alias: ALIAS };
   }
 
   cfg() {
@@ -418,7 +418,8 @@ class Component extends DCLogic {
       days: (c.days && c.days.length) ? c.days : def.days,
       breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
       breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
-      breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd
+      breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd,
+      alias: c.alias ? c.alias : def.alias
     };
   }
 
@@ -509,7 +510,7 @@ class Component extends DCLogic {
     const ready1 = !!(svc && s.slot);
     const ready2 = !!(s.nombre.trim() && s.tel.trim());
     const msg = "Hola LAestudio! Soy " + (s.nombre || "—") + ". Reservé " + (svc ? svc.name : "—") +
-      " para el " + turnoLabel + ". Ya transferí la seña de " + money(senia) + " al alias " + ALIAS +
+      " para el " + turnoLabel + ". Ya transferí la seña de " + money(senia) + " al alias " + cfg.alias +
       " y les envío el comprobante.";
 
     const mt = s.miTurno;
@@ -595,7 +596,7 @@ class Component extends DCLogic {
       svcPrice: svc ? money(svc.price) : "—",
       senia: money(senia),
       turnoLabel: turnoLabel,
-      alias: ALIAS,
+      alias: cfg.alias,
       nombre: s.nombre,
       tel: s.tel,
       nombreCorto: (s.nombre.trim().split(" ")[0] || "gracias"),
@@ -608,7 +609,7 @@ class Component extends DCLogic {
       setNombre: e => this.setState({ nombre: e.target.value }),
       setTel: e => this.setState({ tel: e.target.value }),
       copyAlias: () => {
-        if (navigator.clipboard) navigator.clipboard.writeText(ALIAS);
+        if (navigator.clipboard) navigator.clipboard.writeText(cfg.alias);
         this.setState({ copied: true });
         setTimeout(() => this.setState({ copied: false }), 2000);
       },

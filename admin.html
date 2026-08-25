@@ -294,6 +294,15 @@
             </div>
 
             <div>
+              <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Pagos</h2>
+              <p style="margin: 0 0 18px; font-size: 14px; color: #8E8880">Alias para que los clientes transfieran la seña. Se actualiza al instante en la web pública.</p>
+              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880; max-width: 320px">
+                Alias
+                <input type="text" value="{{ cfgAlias }}" onChange="{{ setCfgAlias }}" style="padding: 13px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+              </label>
+            </div>
+
+            <div>
               <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Servicios</h2>
               <p style="margin: 0 0 22px; font-size: 14px; color: #8E8880">Editá nombre, duración o precio, o quitá un servicio. Los cambios se ven al instante en la web pública.</p>
               <div style="display: grid; gap: 10px; margin-bottom: 22px">
@@ -532,7 +541,8 @@ class Component extends DCLogic {
       ],
       hourStart: 10, hourEnd: 20,
       days: [2, 3, 4, 5, 6],
-      breakEnabled: false, breakStart: 13, breakEnd: 15
+      breakEnabled: false, breakStart: 13, breakEnd: 15,
+      alias: "laestudio.corte"
     };
   }
 
@@ -546,7 +556,8 @@ class Component extends DCLogic {
       days: (c.days && c.days.length) ? c.days : def.days,
       breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
       breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
-      breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd
+      breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd,
+      alias: c.alias ? c.alias : def.alias
     };
   }
 
@@ -627,6 +638,10 @@ class Component extends DCLogic {
 
   toggleBreak() {
     this.saveCfg({ breakEnabled: !this.cfg().breakEnabled });
+  }
+
+  setAlias(value) {
+    this.saveCfg({ alias: value });
   }
 
   fromWeb() {
@@ -952,6 +967,8 @@ class Component extends DCLogic {
       cfgBreakStart: cfg.breakStart, cfgBreakEnd: cfg.breakEnd,
       setCfgBreakStart: e => this.setHorario("breakStart", e.target.value),
       setCfgBreakEnd: e => this.setHorario("breakEnd", e.target.value),
+      cfgAlias: cfg.alias,
+      setCfgAlias: e => this.setAlias(e.target.value),
       cfgDayChips: [0, 1, 2, 3, 4, 5, 6].map(dow => {
         const active = cfg.days.indexOf(dow) > -1;
         return {
