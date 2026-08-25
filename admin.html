@@ -296,6 +296,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
 const WA_LOCAL = "5493512524591";
+const ADMIN_PASS = "laestudio123";
 const DIRECCION = "Guiñazú, Córdoba";
 const DOW = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 const MONTH = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -388,6 +389,13 @@ class Component extends DCLogic {
       id: t.id, dayKey: t.dayKey, time: t.time, cliente: t.cliente || "Sin nombre",
       tel: t.tel || "—", svc: t.svc || "corte", estado: t.estado || "comprobante", origen: "Web"
     }));
+  }
+
+  tryLogin() {
+    const s = this.state;
+    if (!s.user.trim() || !s.pass.trim()) this.setState({ loginError: "Ingresá usuario y contraseña." });
+    else if (s.pass !== ADMIN_PASS) this.setState({ loginError: "Contraseña incorrecta." });
+    else this.setState({ authed: true, loginError: "" });
   }
 
   sync() {
@@ -581,11 +589,8 @@ class Component extends DCLogic {
       user: s.user, pass: s.pass, loginError: s.loginError,
       setUser: e => this.setState({ user: e.target.value }),
       setPass: e => this.setState({ pass: e.target.value }),
-      onLoginKey: e => { if (e.key === "Enter") this.setState({ authed: true, loginError: "" }); },
-      login: () => {
-        if (!s.user.trim() || !s.pass.trim()) this.setState({ loginError: "Ingresá usuario y contraseña." });
-        else this.setState({ authed: true, loginError: "" });
-      },
+      onLoginKey: e => { if (e.key === "Enter") this.tryLogin(); },
+      login: () => this.tryLogin(),
       logout: () => this.setState({ authed: false, pass: "" }),
       lastSync: s.lastSync,
       tabs: tabs, kpis: kpis,
