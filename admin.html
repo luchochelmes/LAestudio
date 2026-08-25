@@ -237,6 +237,72 @@
           </div>
         </sc-if>
 
+        <sc-if value="{{ isConfig }}" hint-placeholder-val="{{ false }}">
+          <div style="animation: boFade .3s ease both; display: grid; gap: 34px; max-width: 720px">
+            <div>
+              <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Horario de atención</h2>
+              <p style="margin: 0 0 22px; font-size: 14px; color: #8E8880">Define entre qué horas se puede sacar turno y qué días de la semana atendés.</p>
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 20px">
+                <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                  Desde
+                  <select value="{{ cfgHourStart }}" onChange="{{ setCfgHourStart }}" style="padding: 12px 14px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px">
+                    <sc-for list="{{ cfgHourOptions }}" as="h" hint-placeholder-count="15">
+                      <option value="{{ h.value }}">{{ h.label }}</option>
+                    </sc-for>
+                  </select>
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                  Hasta
+                  <select value="{{ cfgHourEnd }}" onChange="{{ setCfgHourEnd }}" style="padding: 12px 14px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px">
+                    <sc-for list="{{ cfgHourOptions }}" as="h" hint-placeholder-count="15">
+                      <option value="{{ h.value }}">{{ h.label }}</option>
+                    </sc-for>
+                  </select>
+                </label>
+              </div>
+              <p style="margin: 0 0 10px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">Días abiertos</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                <sc-for list="{{ cfgDayChips }}" as="c" hint-placeholder-count="7">
+                  <button type="button" onClick="{{ c.toggle }}" style="padding: 10px 16px; border: 1px solid {{ c.border }}; background: {{ c.bg }}; color: {{ c.fg }}; border-radius: 2px; font-size: 12px; text-transform: capitalize; cursor: pointer">{{ c.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <h2 style="margin: 0 0 8px; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1">Servicios</h2>
+              <p style="margin: 0 0 22px; font-size: 14px; color: #8E8880">Editá nombre, duración o precio, o quitá un servicio. Los cambios se ven al instante en la web pública.</p>
+              <div style="display: grid; gap: 10px; margin-bottom: 22px">
+                <sc-for list="{{ cfgServices }}" as="sv" hint-placeholder-count="3">
+                  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; border: 1px solid #211E1B; background: #0E0D0C; padding: 14px 16px">
+                    <input type="text" value="{{ sv.name }}" onChange="{{ sv.setName }}" style="flex: 1 1 160px; padding: 11px 13px; background: #0B0B0A; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px" style-focus="border-color: #C9A97E; outline: none">
+                    <input type="number" value="{{ sv.duration }}" onChange="{{ sv.setDuration }}" style="flex: 0 1 90px; padding: 11px 13px; background: #0B0B0A; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px" style-focus="border-color: #C9A97E; outline: none">
+                    <span style="font-size: 11px; color: #6E675F">min</span>
+                    <input type="number" value="{{ sv.price }}" onChange="{{ sv.setPrice }}" style="flex: 0 1 120px; padding: 11px 13px; background: #0B0B0A; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px" style-focus="border-color: #C9A97E; outline: none">
+                    <span style="font-size: 11px; color: #6E675F">$</span>
+                    <button type="button" onClick="{{ sv.remove }}" style="margin-left: auto; padding: 10px 14px; border: 1px solid #2A2621; background: transparent; color: #C98E7E; border-radius: 2px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #A9705E">Quitar</button>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="border: 1px dashed #2A2621; padding: 18px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px">
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880; flex: 1 1 160px">
+                  Nombre
+                  <input type="text" value="{{ cfgNewName }}" onChange="{{ setCfgNewName }}" placeholder="Ej: Coloración" style="padding: 12px 13px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px" style-focus="border-color: #C9A97E; outline: none">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880; flex: 0 1 100px">
+                  Minutos
+                  <input type="number" value="{{ cfgNewDuration }}" onChange="{{ setCfgNewDuration }}" style="padding: 12px 13px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px" style-focus="border-color: #C9A97E; outline: none">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880; flex: 0 1 130px">
+                  Precio
+                  <input type="number" value="{{ cfgNewPrice }}" onChange="{{ setCfgNewPrice }}" placeholder="15000" style="padding: 12px 13px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px" style-focus="border-color: #C9A97E; outline: none">
+                </label>
+                <button type="button" onClick="{{ addServicio }}" style="padding: 13px 20px; border: 0; background: #C9A97E; color: #0B0B0A; border-radius: 2px; font-size: 11.5px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Agregar servicio</button>
+              </div>
+              <p style="margin: 10px 0 0; min-height: 16px; font-size: 12.5px; color: #C9A97E">{{ cfgError }}</p>
+            </div>
+          </div>
+        </sc-if>
 
       </main>
 
@@ -262,9 +328,9 @@
               <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
                 Servicio
                 <select value="{{ mSvc }}" onChange="{{ setMSvc }}" style="padding: 14px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none">
-                  <option value="corte">Corte · 30 min · $15.000</option>
-                  <option value="barba">Barba · 30 min · $5.000</option>
-                  <option value="corte-barba">Corte + barba · 30 min · $18.000</option>
+                  <sc-for list="{{ manualSvcOptions }}" as="mo" hint-placeholder-count="3">
+                    <option value="{{ mo.id }}">{{ mo.label }}</option>
+                  </sc-for>
                 </select>
               </label>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
@@ -417,11 +483,12 @@ class Component extends DCLogic {
     turnos: [], bloqueos: {}, toast: "",
     manualOpen: false, mNombre: "", mTel: "", mSvc: "corte", mDay: "", mTime: "10:00", mConfirmado: true, manualError: "",
     pwOpen: false, pwCurrent: "", pwNew: "", pwNew2: "", pwError: "",
+    config: null, cfgNewName: "", cfgNewDuration: 30, cfgNewPrice: "", cfgError: "",
     lastSync: "recién"
   };
 
   componentDidMount() {
-    this.setState({ turnos: seed().concat(this.fromWeb()), bloqueos: this.readLS("laestudio.bloqueos", {}) });
+    this.setState({ turnos: seed().concat(this.fromWeb()), bloqueos: this.readLS("laestudio.bloqueos", {}), config: this.readLS("laestudio.config", null) });
     this.poll = setInterval(() => this.sync(), 4000);
     this.onStorage = () => this.sync();
     window.addEventListener("storage", this.onStorage);
@@ -430,6 +497,101 @@ class Component extends DCLogic {
 
   readLS(k, fb) { try { return JSON.parse(localStorage.getItem(k) || "null") || fb; } catch (e) { return fb; } }
   writeLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  defaultConfig() {
+    return {
+      services: [
+        { id: "corte", name: "Corte", duration: 30, price: 15000 },
+        { id: "barba", name: "Barba", duration: 30, price: 5000 },
+        { id: "corte-barba", name: "Corte + barba", duration: 30, price: 18000 }
+      ],
+      hourStart: 10, hourEnd: 20,
+      days: [2, 3, 4, 5, 6]
+    };
+  }
+
+  cfg() {
+    const c = this.state.config || {};
+    const def = this.defaultConfig();
+    return {
+      services: (c.services && c.services.length) ? c.services : def.services,
+      hourStart: c.hourStart != null ? c.hourStart : def.hourStart,
+      hourEnd: c.hourEnd != null ? c.hourEnd : def.hourEnd,
+      days: (c.days && c.days.length) ? c.days : def.days
+    };
+  }
+
+  saveCfg(patch) {
+    const next = Object.assign({}, this.cfg(), patch);
+    this.writeLS("laestudio.config", next);
+    this.setState({ config: next });
+  }
+
+  times() {
+    const { hourStart, hourEnd } = this.cfg();
+    const out = [];
+    for (let h = hourStart; h < hourEnd; h++) { out.push(h + ":00"); out.push(h + ":30"); }
+    return out;
+  }
+
+  bizDays(from, count, dir) {
+    const days = this.cfg().days;
+    const out = [], d = new Date(from);
+    d.setHours(0, 0, 0, 0);
+    while (out.length < count) {
+      d.setDate(d.getDate() + dir);
+      if (days.indexOf(d.getDay()) > -1) out.push(new Date(d));
+    }
+    return dir < 0 ? out.reverse() : out;
+  }
+
+  svcMap() {
+    const m = {};
+    this.cfg().services.forEach(s => { m[s.id] = s; });
+    return m;
+  }
+
+  addServicio() {
+    const s = this.state;
+    const name = s.cfgNewName.trim();
+    const price = parseInt(s.cfgNewPrice, 10);
+    const duration = parseInt(s.cfgNewDuration, 10) || 30;
+    if (!name) { this.setState({ cfgError: "Falta el nombre del servicio." }); return; }
+    if (!price || price <= 0) { this.setState({ cfgError: "Poné un precio válido." }); return; }
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "svc";
+    const id = slug + "-" + Date.now();
+    const services = this.cfg().services.concat([{ id: id, name: name, duration: duration, price: price }]);
+    this.saveCfg({ services: services });
+    this.setState({ cfgNewName: "", cfgNewPrice: "", cfgNewDuration: 30, cfgError: "" });
+    this.flash("Servicio agregado: " + name);
+  }
+
+  quitarServicio(id) {
+    const services = this.cfg().services.filter(s => s.id !== id);
+    if (services.length === 0) { this.flash("Tiene que quedar al menos un servicio."); return; }
+    if (!window.confirm("¿Quitar este servicio? Los turnos ya cargados con este servicio no se van a borrar.")) return;
+    this.saveCfg({ services: services });
+    this.flash("Servicio eliminado");
+  }
+
+  editarServicio(id, field, value) {
+    const services = this.cfg().services.map(s => s.id === id ? Object.assign({}, s, { [field]: value }) : s);
+    this.saveCfg({ services: services });
+  }
+
+  toggleDiaConfig(dow) {
+    const days = this.cfg().days.slice();
+    const i = days.indexOf(dow);
+    if (i > -1) { if (days.length <= 1) { this.flash("Tiene que quedar al menos un día abierto."); return; } days.splice(i, 1); }
+    else days.push(dow);
+    this.saveCfg({ days: days });
+  }
+
+  setHorario(field, value) {
+    const n = parseInt(value, 10);
+    if (isNaN(n)) return;
+    this.saveCfg({ [field]: n });
+  }
 
   fromWeb() {
     return this.readLS("laestudio.turnos", []).map(t => ({
@@ -499,7 +661,7 @@ class Component extends DCLogic {
   confirmar(t) {
     const d = new Date(t.dayKey + "T00:00:00");
     const label = DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
-    const msg = "Hola " + t.cliente.split(" ")[0] + "! Tu turno en LAestudio quedó confirmado: " + SVC[t.svc].name +
+    const msg = "Hola " + t.cliente.split(" ")[0] + "! Tu turno en LAestudio quedó confirmado: " + this.svcMap()[t.svc].name +
       ", " + label + " a las " + t.time + " h. Dirección: " + DIRECCION + ". Te esperamos.";
     const tel = (t.tel || "").replace(/\D/g, "");
     const to = tel.length >= 10 ? "549" + tel.slice(-10) : WA_LOCAL;
@@ -547,7 +709,7 @@ class Component extends DCLogic {
       const b = Object.assign({}, s.bloqueos);
       const busy = {};
       s.turnos.forEach(t => { if (t.dayKey === dayKey && t.estado !== "cancelado") busy[t.time] = true; });
-      const libres = times().filter(t => !busy[t]);
+      const libres = this.times().filter(t => !busy[t]);
       if (allBlocked) { b[dayKey] = []; libres.forEach(t => this.freeSlot(dayKey, t)); }
       else { b[dayKey] = libres; libres.forEach(t => this.holdSlot(dayKey, t)); }
       this.writeLS("laestudio.bloqueos", b);
@@ -558,7 +720,9 @@ class Component extends DCLogic {
 
   renderVals() {
     const s = this.state;
-    const future = bizDays(new Date(), 6, 1);
+    const SVC = this.svcMap();
+    const cfg = this.cfg();
+    const future = this.bizDays(new Date(), 6, 1);
     const cursor = future[Math.min(s.cursor, future.length - 1)] || future[0];
     const cursorKey = key(cursor);
     const bl = k => s.bloqueos[k] || [];
@@ -567,19 +731,21 @@ class Component extends DCLogic {
     const at = (k, t) => byDay(k).find(x => x.time === t);
     const pendientes = s.turnos.filter(t => t.estado === "comprobante");
     const dayLabel = d => DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
+    const svcOf = id => SVC[id] || { name: id, price: 0, duration: 30 };
 
     const hoyKey = key(future[0]);
     const kpis = [
       { label: "Turnos " + DOW[future[0].getDay()], value: byDay(hoyKey).length, color: "#EDE9E1" },
       { label: "Por revisar", value: pendientes.length, color: "#C9A97E" },
       { label: "Sin señar", value: s.turnos.filter(t => t.estado === "pendiente").length, color: "#B7B0A6" },
-      { label: "Ingreso confirmado", value: money(s.turnos.filter(t => t.estado === "confirmado" && t.dayKey >= hoyKey).reduce((a, t) => a + SVC[t.svc].price, 0)), color: "#7E9A6F" }
+      { label: "Ingreso confirmado", value: money(s.turnos.filter(t => t.estado === "confirmado" && t.dayKey >= hoyKey).reduce((a, t) => a + svcOf(t.svc).price, 0)), color: "#7E9A6F" }
     ];
 
     const tabs = [
       { id: "turnero", label: "Turnero" },
       { id: "pendientes", label: "Comprobantes", count: pendientes.length },
-      { id: "disponibilidad", label: "Disponibilidad" }
+      { id: "disponibilidad", label: "Disponibilidad" },
+      { id: "config", label: "Configuración" }
     ].map(t => ({
       label: t.label, count: t.count, showCount: !!t.count,
       line: s.tab === t.id ? "#C9A97E" : "transparent",
@@ -587,7 +753,7 @@ class Component extends DCLogic {
       go: () => this.setState({ tab: t.id })
     }));
 
-    const dayRows = times().map(t => {
+    const dayRows = this.times().map(t => {
       const turno = at(cursorKey, t);
       const blocked = bl(cursorKey).indexOf(t) > -1;
       const est = turno ? EST[turno.estado] : null;
@@ -597,7 +763,7 @@ class Component extends DCLogic {
         accent: turno ? est.color : blocked ? "#2A2621" : "#161412",
         cliente: turno ? turno.cliente : blocked ? "Bloqueado" : "Libre",
         nameFg: turno ? "#EDE9E1" : "#4E4740",
-        servicio: turno ? SVC[turno.svc].name + " · " + money(SVC[turno.svc].price) : "",
+        servicio: turno ? svcOf(turno.svc).name + " · " + money(svcOf(turno.svc).price) : "",
         estadoLabel: turno ? est.label : "",
         canConfirm: !!(turno && turno.estado === "comprobante"),
         canCancel: !!turno,
@@ -609,13 +775,13 @@ class Component extends DCLogic {
       };
     });
 
-    const week = bizDays(new Date(), 5, 1);
+    const week = this.bizDays(new Date(), 5, 1);
     const weekDays = week.map((d, i) => {
       const k = key(d);
       return { dow: DOW[d.getDay()], dayNum: d.getDate(), fg: k === cursorKey ? "#C9A97E" : "#EDE9E1",
-        libres: times().length - byDay(k).length - bl(k).length };
+        libres: this.times().length - byDay(k).length - bl(k).length };
     });
-    const weekRows = times().map(t => ({
+    const weekRows = this.times().map(t => ({
       time: t,
       cells: week.map(d => {
         const k = key(d), turno = at(k, t), blocked = bl(k).indexOf(t) > -1;
@@ -624,7 +790,7 @@ class Component extends DCLogic {
           bg: turno ? "#131211" : blocked ? "#0C0B0A" : "transparent",
           dot: turno ? est.color : blocked ? "#2A2621" : "#1B1815",
           fg: turno ? "#B7B0A6" : "#3A342D",
-          label: turno ? turno.cliente.split(" ")[0] + " · " + SVC[turno.svc].name : blocked ? "bloqueado" : "libre"
+          label: turno ? turno.cliente.split(" ")[0] + " · " + svcOf(turno.svc).name : blocked ? "bloqueado" : "libre"
         };
       })
     }));
@@ -644,13 +810,13 @@ class Component extends DCLogic {
       const k = key(d), busy = {};
       byDay(k).forEach(t => { busy[t.time] = true; });
       const blocked = bl(k);
-      const libres = times().filter(t => !busy[t] && blocked.indexOf(t) < 0);
+      const libres = this.times().filter(t => !busy[t] && blocked.indexOf(t) < 0);
       const allBlocked = libres.length === 0 && blocked.length > 0;
       return {
         label: dayLabel(d), libres: libres.length, ocupados: Object.keys(busy).length, bloqueados: blocked.length,
         allLabel: allBlocked ? "Liberar día" : "Bloquear día",
         toggleAll: () => this.toggleDia(k, allBlocked),
-        slots: times().map(t => {
+        slots: this.times().map(t => {
           const isBusy = !!busy[t], isBlocked = blocked.indexOf(t) > -1;
           return {
             time: t, busy: isBusy,
@@ -669,7 +835,8 @@ class Component extends DCLogic {
     const mDayKey = s.mDay || (manualDays[0] && manualDays[0].key) || "";
     const busyManual = {};
     byDay(mDayKey).forEach(t => { busyManual[t.time] = true; });
-    const manualTimes = times().filter(t => !busyManual[t]).map(t => ({ value: t, label: t + " h" }));
+    const manualTimes = this.times().filter(t => !busyManual[t]).map(t => ({ value: t, label: t + " h" }));
+    const manualSvcOptions = cfg.services.map(sv => ({ id: sv.id, label: sv.name + " · " + sv.duration + " min · " + money(sv.price) }));
 
     return {
       locked: !s.authed, authed: s.authed,
@@ -701,8 +868,8 @@ class Component extends DCLogic {
         return {
           cliente: t.cliente, tel: t.tel, origen: t.origen,
           estadoLabel: EST[t.estado].label, accent: EST[t.estado].color,
-          detalle: SVC[t.svc].name + " · " + dayLabel(d) + " · " + t.time + " h",
-          senia: money(Math.round(SVC[t.svc].price / 2)),
+          detalle: svcOf(t.svc).name + " · " + dayLabel(d) + " · " + t.time + " h",
+          senia: money(Math.round(svcOf(t.svc).price / 2)),
           waCliente: "https://wa.me/" + (tel.length >= 10 ? "549" + tel.slice(-10) : WA_LOCAL),
           confirm: () => this.confirmar(t),
           reject: () => this.rechazar(t)
@@ -710,13 +877,14 @@ class Component extends DCLogic {
       }),
       noPendientes: pendientes.length === 0,
       manualOpen: s.manualOpen,
-      openManual: () => this.setState({ manualOpen: true, mDay: mDayKey, manualError: "" }),
+      openManual: () => this.setState({ manualOpen: true, mDay: mDayKey, mSvc: (cfg.services[0] || {}).id || "", manualError: "" }),
       closeManual: () => this.setState({ manualOpen: false }),
       mNombre: s.mNombre, mTel: s.mTel, mSvc: s.mSvc, mDay: mDayKey, mTime: s.mTime, mConfirmado: s.mConfirmado,
       manualError: s.manualError, manualDays: manualDays, manualTimes: manualTimes,
       setMNombre: e => this.setState({ mNombre: e.target.value }),
       setMTel: e => this.setState({ mTel: e.target.value }),
       setMSvc: e => this.setState({ mSvc: e.target.value }),
+      manualSvcOptions: manualSvcOptions,
       setMDay: e => this.setState({ mDay: e.target.value }),
       setMTime: e => this.setState({ mTime: e.target.value }),
       setMConfirmado: e => this.setState({ mConfirmado: e.target.checked }),
@@ -737,7 +905,33 @@ class Component extends DCLogic {
       setPwCurrent: e => this.setState({ pwCurrent: e.target.value }),
       setPwNew: e => this.setState({ pwNew: e.target.value }),
       setPwNew2: e => this.setState({ pwNew2: e.target.value }),
-      savePw: () => this.tryChangePass()
+      savePw: () => this.tryChangePass(),
+      isConfig: s.tab === "config",
+      cfgHourStart: cfg.hourStart, cfgHourEnd: cfg.hourEnd,
+      cfgHourOptions: Array.from({ length: 15 }, (_, i) => i + 7).map(h => ({ value: h, label: h + ":00" })),
+      setCfgHourStart: e => this.setHorario("hourStart", e.target.value),
+      setCfgHourEnd: e => this.setHorario("hourEnd", e.target.value),
+      cfgDayChips: [0, 1, 2, 3, 4, 5, 6].map(dow => {
+        const active = cfg.days.indexOf(dow) > -1;
+        return {
+          label: DOW[dow], active: active,
+          border: active ? "#C9A97E" : "#2A2621", bg: active ? "#C9A97E" : "transparent",
+          fg: active ? "#0B0B0A" : "#B7B0A6",
+          toggle: () => this.toggleDiaConfig(dow)
+        };
+      }),
+      cfgServices: cfg.services.map(sv => ({
+        id: sv.id, name: sv.name, duration: sv.duration, price: sv.price,
+        setName: e => this.editarServicio(sv.id, "name", e.target.value),
+        setDuration: e => this.editarServicio(sv.id, "duration", parseInt(e.target.value, 10) || sv.duration),
+        setPrice: e => this.editarServicio(sv.id, "price", parseInt(e.target.value, 10) || 0),
+        remove: () => this.quitarServicio(sv.id)
+      })),
+      cfgNewName: s.cfgNewName, cfgNewDuration: s.cfgNewDuration, cfgNewPrice: s.cfgNewPrice, cfgError: s.cfgError,
+      setCfgNewName: e => this.setState({ cfgNewName: e.target.value }),
+      setCfgNewDuration: e => this.setState({ cfgNewDuration: e.target.value }),
+      setCfgNewPrice: e => this.setState({ cfgNewPrice: e.target.value }),
+      addServicio: () => this.addServicio()
     };
   }
 }

@@ -348,9 +348,9 @@ const ALIAS = "laestudio.corte";
 const DOW = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 const MONTH = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 const SERVICES = [
-  { id: "corte", name: "Corte", duration: "30 min", price: 15000 },
-  { id: "barba", name: "Barba", duration: "30 min", price: 5000 },
-  { id: "corte-barba", name: "Corte + barba", duration: "30 min", price: 18000 }
+  { id: "corte", name: "Corte", duration: 30, price: 15000 },
+  { id: "barba", name: "Barba", duration: 30, price: 5000 },
+  { id: "corte-barba", name: "Corte + barba", duration: 30, price: 18000 }
 ];
 
 const money = n => "$" + n.toLocaleString("es-AR");
@@ -389,9 +389,11 @@ class Component extends DCLogic {
     Object.keys(saved).forEach(k => { seeded[k] = (seeded[k] || []).concat(saved[k]); });
     this.setState({ taken: seeded, miTurno: this.readMiTurno() });
     this._tick = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 20000);
+    this.onStorage = () => this.setState(s => ({ tick: s.tick + 1 }));
+    window.addEventListener("storage", this.onStorage);
   }
 
-  componentWillUnmount() { clearInterval(this._tick); }
+  componentWillUnmount() { clearInterval(this._tick); window.removeEventListener("storage", this.onStorage); }
 
   readLS(k, fb) { try { return JSON.parse(localStorage.getItem(k) || "null") || fb; } catch (e) { return fb; } }
   writeLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -402,20 +404,36 @@ class Component extends DCLogic {
     return t;
   }
 
+  defaultConfig() {
+    return { services: SERVICES, hourStart: 10, hourEnd: 20, days: [2, 3, 4, 5, 6] };
+  }
+
+  cfg() {
+    const c = this.readLS("laestudio.config", null) || {};
+    const def = this.defaultConfig();
+    return {
+      services: (c.services && c.services.length) ? c.services : def.services,
+      hourStart: c.hourStart != null ? c.hourStart : def.hourStart,
+      hourEnd: c.hourEnd != null ? c.hourEnd : def.hourEnd,
+      days: (c.days && c.days.length) ? c.days : def.days
+    };
+  }
+
   timeList() {
+    const { hourStart, hourEnd } = this.cfg();
     const out = [];
-    for (let h = 10; h < 20; h++) { out.push(h + ":00"); out.push(h + ":30"); }
+    for (let h = hourStart; h < hourEnd; h++) { out.push(h + ":00"); out.push(h + ":30"); }
     return out;
   }
 
   dayList() {
+    const days = this.cfg().days;
     const out = [];
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     while (out.length < 6) {
       d.setDate(d.getDate() + 1);
-      const dow = d.getDay();
-      if (dow >= 2 && dow <= 6) {
+      if (days.indexOf(d.getDay()) > -1) {
         const date = new Date(d);
         out.push({ key: date.toISOString().slice(0, 10), date: date });
       }
@@ -474,9 +492,10 @@ class Component extends DCLogic {
 
   renderVals() {
     const s = this.state;
+    const cfg = this.cfg();
     const days = this.dayList();
     const day = days[s.day] || days[0];
-    const svc = SERVICES.find(x => x.id === s.svc) || null;
+    const svc = cfg.services.find(x => x.id === s.svc) || null;
     const taken = (s.taken[day ? day.key : ""] || []);
     const senia = svc ? Math.round(svc.price / 2) : 0;
     const dayLabel = day ? DOW[day.date.getDay()] + " " + day.date.getDate() + " de " + MONTH[day.date.getMonth()] : "";
@@ -490,7 +509,7 @@ class Component extends DCLogic {
     const mt = s.miTurno;
     let miTurnoInfo = null;
     if (mt) {
-      const mtSvc = SERVICES.find(x => x.id === mt.svc);
+      const mtSvc = cfg.services.find(x => x.id === mt.svc);
       const mtDate = new Date(mt.dayKey + "T" + mt.time + ":00");
       const mtLabel = DOW[mtDate.getDay()] + " " + mtDate.getDate() + " de " + MONTH[mtDate.getMonth()] + ", " + mt.time + " h";
       const cutoff = mtDate.getTime() - 30 * 60 * 1000;
@@ -515,8 +534,8 @@ class Component extends DCLogic {
     }
 
     return {
-      services: SERVICES.map((x, i) => ({
-        num: "0" + (i + 1), name: x.name, duration: x.duration,
+      services: cfg.services.map((x, i) => ({
+        num: "0" + (i + 1), name: x.name, duration: x.duration + " min",
         price: money(x.price), deposit: money(Math.round(x.price / 2)),
         border: s.svc === x.id ? "#C9A97E" : "#2A2621",
         bg: s.svc === x.id ? "#17150F" : "#0E0D0C",
