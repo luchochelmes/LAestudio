@@ -261,11 +261,36 @@
                 </label>
               </div>
               <p style="margin: 0 0 10px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">Días abiertos</p>
-              <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px">
                 <sc-for list="{{ cfgDayChips }}" as="c" hint-placeholder-count="7">
                   <button type="button" onClick="{{ c.toggle }}" style="padding: 10px 16px; border: 1px solid {{ c.border }}; background: {{ c.bg }}; color: {{ c.fg }}; border-radius: 2px; font-size: 12px; text-transform: capitalize; cursor: pointer">{{ c.label }}</button>
                 </sc-for>
               </div>
+
+              <label style="display: flex; align-items: center; gap: 12px; padding: 15px 16px; border: 1px solid #2A2621; background: #0E0D0C; font-size: 13.5px; color: #B7B0A6; cursor: pointer; margin-bottom: 14px">
+                <input type="checkbox" checked="{{ cfgBreakEnabled }}" onChange="{{ toggleBreak }}" style="width: 17px; height: 17px; accent-color: #C9A97E">
+                Cortar el horario al mediodía (ej: parar de atender entre 13 y 15 h)
+              </label>
+              <sc-if value="{{ cfgBreakEnabled }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px">
+                  <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                    Corte desde
+                    <select value="{{ cfgBreakStart }}" onChange="{{ setCfgBreakStart }}" style="padding: 12px 14px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px">
+                      <sc-for list="{{ cfgHourOptions }}" as="h" hint-placeholder-count="15">
+                        <option value="{{ h.value }}">{{ h.label }}</option>
+                      </sc-for>
+                    </select>
+                  </label>
+                  <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                    Corte hasta
+                    <select value="{{ cfgBreakEnd }}" onChange="{{ setCfgBreakEnd }}" style="padding: 12px 14px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px">
+                      <sc-for list="{{ cfgHourOptions }}" as="h" hint-placeholder-count="15">
+                        <option value="{{ h.value }}">{{ h.label }}</option>
+                      </sc-for>
+                    </select>
+                  </label>
+                </div>
+              </sc-if>
             </div>
 
             <div>
@@ -506,7 +531,8 @@ class Component extends DCLogic {
         { id: "corte-barba", name: "Corte + barba", duration: 30, price: 18000 }
       ],
       hourStart: 10, hourEnd: 20,
-      days: [2, 3, 4, 5, 6]
+      days: [2, 3, 4, 5, 6],
+      breakEnabled: false, breakStart: 13, breakEnd: 15
     };
   }
 
@@ -517,7 +543,10 @@ class Component extends DCLogic {
       services: (c.services && c.services.length) ? c.services : def.services,
       hourStart: c.hourStart != null ? c.hourStart : def.hourStart,
       hourEnd: c.hourEnd != null ? c.hourEnd : def.hourEnd,
-      days: (c.days && c.days.length) ? c.days : def.days
+      days: (c.days && c.days.length) ? c.days : def.days,
+      breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
+      breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
+      breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd
     };
   }
 
@@ -528,9 +557,12 @@ class Component extends DCLogic {
   }
 
   times() {
-    const { hourStart, hourEnd } = this.cfg();
+    const { hourStart, hourEnd, breakEnabled, breakStart, breakEnd } = this.cfg();
     const out = [];
-    for (let h = hourStart; h < hourEnd; h++) { out.push(h + ":00"); out.push(h + ":30"); }
+    for (let h = hourStart; h < hourEnd; h++) {
+      if (breakEnabled && h >= breakStart && h < breakEnd) continue;
+      out.push(h + ":00"); out.push(h + ":30");
+    }
     return out;
   }
 
@@ -591,6 +623,10 @@ class Component extends DCLogic {
     const n = parseInt(value, 10);
     if (isNaN(n)) return;
     this.saveCfg({ [field]: n });
+  }
+
+  toggleBreak() {
+    this.saveCfg({ breakEnabled: !this.cfg().breakEnabled });
   }
 
   fromWeb() {
@@ -911,6 +947,11 @@ class Component extends DCLogic {
       cfgHourOptions: Array.from({ length: 15 }, (_, i) => i + 7).map(h => ({ value: h, label: h + ":00" })),
       setCfgHourStart: e => this.setHorario("hourStart", e.target.value),
       setCfgHourEnd: e => this.setHorario("hourEnd", e.target.value),
+      cfgBreakEnabled: cfg.breakEnabled,
+      toggleBreak: () => this.toggleBreak(),
+      cfgBreakStart: cfg.breakStart, cfgBreakEnd: cfg.breakEnd,
+      setCfgBreakStart: e => this.setHorario("breakStart", e.target.value),
+      setCfgBreakEnd: e => this.setHorario("breakEnd", e.target.value),
       cfgDayChips: [0, 1, 2, 3, 4, 5, 6].map(dow => {
         const active = cfg.days.indexOf(dow) > -1;
         return {

@@ -405,7 +405,7 @@ class Component extends DCLogic {
   }
 
   defaultConfig() {
-    return { services: SERVICES, hourStart: 10, hourEnd: 20, days: [2, 3, 4, 5, 6] };
+    return { services: SERVICES, hourStart: 10, hourEnd: 20, days: [2, 3, 4, 5, 6], breakEnabled: false, breakStart: 13, breakEnd: 15 };
   }
 
   cfg() {
@@ -415,14 +415,20 @@ class Component extends DCLogic {
       services: (c.services && c.services.length) ? c.services : def.services,
       hourStart: c.hourStart != null ? c.hourStart : def.hourStart,
       hourEnd: c.hourEnd != null ? c.hourEnd : def.hourEnd,
-      days: (c.days && c.days.length) ? c.days : def.days
+      days: (c.days && c.days.length) ? c.days : def.days,
+      breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
+      breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
+      breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd
     };
   }
 
   timeList() {
-    const { hourStart, hourEnd } = this.cfg();
+    const { hourStart, hourEnd, breakEnabled, breakStart, breakEnd } = this.cfg();
     const out = [];
-    for (let h = hourStart; h < hourEnd; h++) { out.push(h + ":00"); out.push(h + ":30"); }
+    for (let h = hourStart; h < hourEnd; h++) {
+      if (breakEnabled && h >= breakStart && h < breakEnd) continue;
+      out.push(h + ":00"); out.push(h + ":30");
+    }
     return out;
   }
 
