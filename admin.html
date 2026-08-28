@@ -34,7 +34,7 @@
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 46px">
           <span style="display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #3A342D; border-radius: 3px; background: linear-gradient(160deg, #16150F, #0B0B0A); font-family: 'Archivo Black', sans-serif; font-size: 18px; color: #C9A97E">LA</span>
           <span style="display: flex; flex-direction: column; line-height: 1.05">
-            <span style="font-family: 'Archivo Black', sans-serif; font-size: 20px">LAestudio</span>
+            <span style="font-family: 'Archivo Black', sans-serif; font-size: 20px">{{ nombreNegocio }}</span>
             <span style="font-size: 9.5px; letter-spacing: .28em; text-transform: uppercase; color: #8E8880; margin-top: 3px; white-space: nowrap">Panel interno</span>
           </span>
         </div>
@@ -237,6 +237,67 @@
           </div>
         </sc-if>
 
+        <sc-if value="{{ isFijos }}" hint-placeholder-val="{{ false }}">
+          <div style="animation: boFade .3s ease both; max-width: 720px">
+            <h2 style="margin: 0 0 8px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 30px; line-height: 1">Turnos fijos</h2>
+            <p style="margin: 0 0 26px; font-size: 14px; color: #8E8880">Clientes que vienen siempre el mismo día y horario. Se bloquean solos todas las semanas en el turnero y en la web pública.</p>
+
+            <div style="display: grid; gap: 10px; margin-bottom: 22px">
+              <sc-for list="{{ fijosList }}" as="f" hint-placeholder-count="3">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; border: 1px solid #211E1B; background: #0E0D0C; padding: 14px 18px">
+                  <div>
+                    <p style="margin: 0 0 4px; font-size: 15px">{{ f.cliente }}</p>
+                    <p style="margin: 0; font-size: 12.5px; color: #8E8880; text-transform: capitalize">{{ f.detalle }}</p>
+                  </div>
+                  <button type="button" onClick="{{ f.remove }}" style="margin-left: auto; padding: 10px 14px; border: 1px solid #2A2621; background: transparent; color: #C98E7E; border-radius: 2px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #A9705E">Quitar</button>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noFijos }}" hint-placeholder-val="{{ false }}">
+                <div style="border: 1px dashed #2A2621; padding: 30px 24px; text-align: center; color: #6E675F; font-size: 14px">Todavía no hay turnos fijos cargados.</div>
+              </sc-if>
+            </div>
+
+            <div style="border: 1px dashed #2A2621; padding: 18px; display: grid; gap: 12px">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px">
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880">
+                  Nombre
+                  <input type="text" value="{{ fNombre }}" onChange="{{ setFNombre }}" placeholder="Cliente" style="padding: 12px 13px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px" style-focus="border-color: #C9A97E; outline: none">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880">
+                  WhatsApp
+                  <input type="tel" value="{{ fTel }}" onChange="{{ setFTel }}" placeholder="351 000 0000" style="padding: 12px 13px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px" style-focus="border-color: #C9A97E; outline: none">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880">
+                  Servicio
+                  <select value="{{ fSvc }}" onChange="{{ setFSvc }}" style="padding: 12px 13px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px">
+                    <sc-for list="{{ fSvcOptions }}" as="fo" hint-placeholder-count="3">
+                      <option value="{{ fo.id }}">{{ fo.label }}</option>
+                    </sc-for>
+                  </select>
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880">
+                  Día de la semana
+                  <select value="{{ fDow }}" onChange="{{ setFDow }}" style="padding: 12px 13px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px; text-transform: capitalize">
+                    <sc-for list="{{ fDowOptions }}" as="fd" hint-placeholder-count="6">
+                      <option value="{{ fd.value }}">{{ fd.label }}</option>
+                    </sc-for>
+                  </select>
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8E8880">
+                  Horario
+                  <select value="{{ fTime }}" onChange="{{ setFTime }}" style="padding: 12px 13px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 14px">
+                    <sc-for list="{{ fTimeOptions }}" as="ft" hint-placeholder-count="15">
+                      <option value="{{ ft.value }}">{{ ft.label }}</option>
+                    </sc-for>
+                  </select>
+                </label>
+              </div>
+              <p style="margin: 0; min-height: 16px; font-size: 12.5px; color: #C9A97E">{{ fError }}</p>
+              <button type="button" onClick="{{ addFijo }}" style="justify-self: start; padding: 13px 20px; border: 0; background: #C9A97E; color: #0B0B0A; border-radius: 2px; font-size: 11.5px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Agregar turno fijo</button>
+            </div>
+          </div>
+        </sc-if>
+
         <sc-if value="{{ isConfig }}" hint-placeholder-val="{{ false }}">
           <div style="animation: boFade .3s ease both; display: grid; gap: 34px; max-width: 720px">
             <div>
@@ -294,12 +355,18 @@
             </div>
 
             <div>
-              <h2 style="margin: 0 0 8px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 30px; line-height: 1">Pagos</h2>
-              <p style="margin: 0 0 18px; font-size: 14px; color: #8E8880">Alias para que los clientes transfieran la seña. Se actualiza al instante en la web pública.</p>
-              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880; max-width: 320px">
-                Alias
-                <input type="text" value="{{ cfgAlias }}" onChange="{{ setCfgAlias }}" style="padding: 13px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
-              </label>
+              <h2 style="margin: 0 0 8px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 30px; line-height: 1">Datos generales</h2>
+              <p style="margin: 0 0 18px; font-size: 14px; color: #8E8880">Nombre del negocio y alias para la seña. Se actualizan al instante en la web pública.</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 16px">
+                <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880; flex: 1 1 260px; max-width: 320px">
+                  Nombre del negocio
+                  <input type="text" value="{{ cfgNombre }}" onChange="{{ setCfgNombre }}" style="padding: 13px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880; flex: 1 1 260px; max-width: 320px">
+                  Alias
+                  <input type="text" value="{{ cfgAlias }}" onChange="{{ setCfgAlias }}" style="padding: 13px 15px; background: #0E0D0C; border: 1px solid #2A2621; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+                </label>
+              </div>
             </div>
 
             <div>
@@ -518,11 +585,12 @@ class Component extends DCLogic {
     manualOpen: false, mNombre: "", mTel: "", mSvc: "corte", mDay: "", mTime: "10:00", mConfirmado: true, manualError: "",
     pwOpen: false, pwCurrent: "", pwNew: "", pwNew2: "", pwError: "",
     config: null, cfgNewName: "", cfgNewDuration: 30, cfgNewPrice: "", cfgError: "",
+    fijos: [], fNombre: "", fTel: "", fSvc: "", fDow: null, fTime: "", fError: "",
     lastSync: "recién"
   };
 
   componentDidMount() {
-    this.setState({ turnos: seed().concat(this.fromWeb()), bloqueos: this.readLS("laestudio.bloqueos", {}), config: this.readLS("laestudio.config", null) });
+    this.setState({ turnos: seed().concat(this.fromWeb()), bloqueos: this.readLS("laestudio.bloqueos", {}), config: this.readLS("laestudio.config", null), fijos: this.readLS("laestudio.fijos", []) });
     this.poll = setInterval(() => this.sync(), 4000);
     this.onStorage = () => this.sync();
     window.addEventListener("storage", this.onStorage);
@@ -542,7 +610,8 @@ class Component extends DCLogic {
       hourStart: 10, hourEnd: 20,
       days: [2, 3, 4, 5, 6],
       breakEnabled: false, breakStart: 13, breakEnd: 15,
-      alias: "laestudio.corte"
+      alias: "laestudio.corte",
+      nombre: "LAestudio"
     };
   }
 
@@ -557,7 +626,8 @@ class Component extends DCLogic {
       breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
       breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
       breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd,
-      alias: c.alias ? c.alias : def.alias
+      alias: c.alias ? c.alias : def.alias,
+      nombre: c.nombre ? c.nombre : def.nombre
     };
   }
 
@@ -644,6 +714,36 @@ class Component extends DCLogic {
     this.saveCfg({ alias: value });
   }
 
+  setNombreNegocio(value) {
+    this.saveCfg({ nombre: value });
+  }
+
+  writeFijos(fijos) {
+    this.writeLS("laestudio.fijos", fijos);
+    this.setState({ fijos: fijos });
+  }
+
+  addFijo() {
+    const s = this.state;
+    const cfg = this.cfg();
+    if (!s.fNombre.trim()) { this.setState({ fError: "Falta el nombre del cliente." }); return; }
+    const fDow = s.fDow != null ? s.fDow : cfg.days[0];
+    const fSvc = s.fSvc || cfg.services[0].id;
+    const fTime = s.fTime || this.times()[0] || "";
+    const dup = s.fijos.some(f => f.dow === fDow && f.time === fTime);
+    if (dup) { this.setState({ fError: "Ya hay un turno fijo en ese día y horario." }); return; }
+    const fijo = { id: "fj" + Date.now(), dow: fDow, time: fTime, cliente: s.fNombre.trim(), tel: s.fTel.trim() || "—", svc: fSvc };
+    this.writeFijos(s.fijos.concat([fijo]));
+    this.setState({ fNombre: "", fTel: "", fError: "" });
+    this.flash("Turno fijo agregado · " + fijo.cliente);
+  }
+
+  quitarFijo(id) {
+    if (!window.confirm("¿Quitar este turno fijo? Deja de repetirse todas las semanas.")) return;
+    this.writeFijos(this.state.fijos.filter(f => f.id !== id));
+    this.flash("Turno fijo eliminado");
+  }
+
   fromWeb() {
     return this.readLS("laestudio.turnos", []).map(t => ({
       id: t.id, dayKey: t.dayKey, time: t.time, cliente: t.cliente || "Sin nombre",
@@ -712,7 +812,7 @@ class Component extends DCLogic {
   confirmar(t) {
     const d = new Date(t.dayKey + "T00:00:00");
     const label = DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
-    const msg = "Hola " + t.cliente.split(" ")[0] + "! Tu turno en LAestudio quedó confirmado: " + this.svcMap()[t.svc].name +
+    const msg = "Hola " + t.cliente.split(" ")[0] + "! Tu turno en " + this.cfg().nombre + " quedó confirmado: " + this.svcMap()[t.svc].name +
       ", " + label + " a las " + t.time + " h. Dirección: " + DIRECCION + ". Te esperamos.";
     const tel = (t.tel || "").replace(/\D/g, "");
     const to = tel.length >= 10 ? "549" + tel.slice(-10) : WA_LOCAL;
@@ -732,7 +832,7 @@ class Component extends DCLogic {
     if (!window.confirm("¿Cancelar el turno de " + t.cliente + " (" + t.time + " h)?")) return;
     const d = new Date(t.dayKey + "T00:00:00");
     const label = DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
-    const msg = "Hola " + t.cliente.split(" ")[0] + "! Te avisamos que tu turno en LAestudio del " + label +
+    const msg = "Hola " + t.cliente.split(" ")[0] + "! Te avisamos que tu turno en " + this.cfg().nombre + " del " + label +
       " a las " + t.time + " h fue cancelado. Cualquier consulta escribinos por acá.";
     const tel = (t.tel || "").replace(/\D/g, "");
     const to = tel.length >= 10 ? "549" + tel.slice(-10) : WA_LOCAL;
@@ -777,7 +877,14 @@ class Component extends DCLogic {
     const cursor = future[Math.min(s.cursor, future.length - 1)] || future[0];
     const cursorKey = key(cursor);
     const bl = k => s.bloqueos[k] || [];
-    const activos = s.turnos.filter(t => t.estado !== "cancelado");
+    const fijosVirtuales = [];
+    future.forEach(d => {
+      const k = key(d);
+      s.fijos.filter(f => f.dow === d.getDay()).forEach(f => {
+        fijosVirtuales.push({ id: "fijoocc-" + f.id + "-" + k, dayKey: k, time: f.time, cliente: f.cliente, tel: f.tel, svc: f.svc, estado: "confirmado", origen: "Fijo" });
+      });
+    });
+    const activos = s.turnos.filter(t => t.estado !== "cancelado").concat(fijosVirtuales);
     const byDay = k => activos.filter(t => t.dayKey === k);
     const at = (k, t) => byDay(k).find(x => x.time === t);
     const pendientes = s.turnos.filter(t => t.estado === "comprobante");
@@ -796,6 +903,7 @@ class Component extends DCLogic {
       { id: "turnero", label: "Turnero" },
       { id: "pendientes", label: "Comprobantes", count: pendientes.length },
       { id: "disponibilidad", label: "Disponibilidad" },
+      { id: "fijos", label: "Turnos fijos" },
       { id: "config", label: "Configuración" }
     ].map(t => ({
       label: t.label, count: t.count, showCount: !!t.count,
@@ -806,6 +914,7 @@ class Component extends DCLogic {
 
     const dayRows = this.times().map(t => {
       const turno = at(cursorKey, t);
+      const esFijo = !!(turno && turno.origen === "Fijo");
       const blocked = bl(cursorKey).indexOf(t) > -1;
       const est = turno ? EST[turno.estado] : null;
       return {
@@ -814,10 +923,10 @@ class Component extends DCLogic {
         accent: turno ? est.color : blocked ? "#2A2621" : "#161412",
         cliente: turno ? turno.cliente : blocked ? "Bloqueado" : "Libre",
         nameFg: turno ? "#EDE9E1" : "#4E4740",
-        servicio: turno ? svcOf(turno.svc).name + " · " + money(svcOf(turno.svc).price) : "",
+        servicio: turno ? svcOf(turno.svc).name + " · " + money(svcOf(turno.svc).price) + (esFijo ? " · Fijo" : "") : "",
         estadoLabel: turno ? est.label : "",
         canConfirm: !!(turno && turno.estado === "comprobante"),
-        canCancel: !!turno,
+        canCancel: !!turno && !esFijo,
         canBlock: !turno,
         blockLabel: blocked ? "Desbloquear" : "Bloquear",
         confirm: () => { if (turno) this.confirmar(turno); },
@@ -969,6 +1078,9 @@ class Component extends DCLogic {
       setCfgBreakEnd: e => this.setHorario("breakEnd", e.target.value),
       cfgAlias: cfg.alias,
       setCfgAlias: e => this.setAlias(e.target.value),
+      cfgNombre: cfg.nombre,
+      setCfgNombre: e => this.setNombreNegocio(e.target.value),
+      nombreNegocio: cfg.nombre,
       cfgDayChips: [0, 1, 2, 3, 4, 5, 6].map(dow => {
         const active = cfg.days.indexOf(dow) > -1;
         return {
@@ -989,7 +1101,28 @@ class Component extends DCLogic {
       setCfgNewName: e => this.setState({ cfgNewName: e.target.value }),
       setCfgNewDuration: e => this.setState({ cfgNewDuration: e.target.value }),
       setCfgNewPrice: e => this.setState({ cfgNewPrice: e.target.value }),
-      addServicio: () => this.addServicio()
+      addServicio: () => this.addServicio(),
+      isFijos: s.tab === "fijos",
+      fijosList: s.fijos.map(f => ({
+        id: f.id, cliente: f.cliente, tel: f.tel,
+        detalle: DOW[f.dow] + " · " + f.time + " h · " + svcOf(f.svc).name,
+        remove: () => this.quitarFijo(f.id)
+      })),
+      noFijos: s.fijos.length === 0,
+      fNombre: s.fNombre, fTel: s.fTel,
+      setFNombre: e => this.setState({ fNombre: e.target.value }),
+      setFTel: e => this.setState({ fTel: e.target.value }),
+      fSvc: s.fSvc || cfg.services[0].id,
+      setFSvc: e => this.setState({ fSvc: e.target.value }),
+      fSvcOptions: manualSvcOptions,
+      fDow: s.fDow != null ? s.fDow : cfg.days[0],
+      setFDow: e => this.setState({ fDow: parseInt(e.target.value, 10) }),
+      fDowOptions: cfg.days.map(dow => ({ value: dow, label: DOW[dow] })),
+      fTime: s.fTime || this.times()[0] || "",
+      setFTime: e => this.setState({ fTime: e.target.value }),
+      fTimeOptions: this.times().map(t => ({ value: t, label: t + " h" })),
+      fError: s.fError,
+      addFijo: () => this.addFijo()
     };
   }
 }

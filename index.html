@@ -43,7 +43,7 @@
     <a href="#top" style="display: flex; align-items: center; gap: 12px; color: #EDE9E1">
       <span style="display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #3A342D; border-radius: 3px; background: linear-gradient(160deg, #16150F, #0B0B0A); font-family: 'Archivo Black', sans-serif; font-size: 17px; letter-spacing: .02em; color: #C9A97E">LA</span>
       <span style="display: flex; flex-direction: column; line-height: 1.05">
-        <span style="font-family: 'Archivo Black', sans-serif; font-size: 19px; letter-spacing: .01em">LAestudio</span>
+        <span style="font-family: 'Archivo Black', sans-serif; font-size: 19px; letter-spacing: .01em">{{ nombreNegocio }}</span>
         <span style="font-size: 9.5px; letter-spacing: .28em; text-transform: uppercase; color: #8E8880; margin-top: 3px">Guiñazú · Córdoba</span>
       </span>
     </a>
@@ -314,7 +314,7 @@
   </section>
 
   <footer style="border-top: 1px solid #211E1B; padding: 34px 40px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #6E675F">
-    <span>LAestudio · Guiñazú, Córdoba</span>
+    <span>{{ nombreNegocio }} · Guiñazú, Córdoba</span>
     <span>Martes a sábado · 10 a 20 h</span>
     <a href="{{ waPlain }}" target="_blank" rel="noopener">{{ waPretty }}</a>
     <span style="display: flex; gap: 18px">
@@ -409,7 +409,7 @@ class Component extends DCLogic {
   }
 
   defaultConfig() {
-    return { services: SERVICES, hourStart: 10, hourEnd: 20, days: [2, 3, 4, 5, 6], breakEnabled: false, breakStart: 13, breakEnd: 15, alias: ALIAS };
+    return { services: SERVICES, hourStart: 10, hourEnd: 20, days: [2, 3, 4, 5, 6], breakEnabled: false, breakStart: 13, breakEnd: 15, alias: ALIAS, nombre: "LAestudio" };
   }
 
   cfg() {
@@ -423,7 +423,8 @@ class Component extends DCLogic {
       breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
       breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
       breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd,
-      alias: c.alias ? c.alias : def.alias
+      alias: c.alias ? c.alias : def.alias,
+      nombre: c.nombre ? c.nombre : def.nombre
     };
   }
 
@@ -491,7 +492,7 @@ class Component extends DCLogic {
 
     const d = new Date(t.dayKey + "T00:00:00");
     const label = DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
-    const msg = "Hola LAestudio! Cancelo mi turno del " + label + " a las " + t.time + " h.";
+    const msg = "Hola " + this.cfg().nombre + "! Cancelo mi turno del " + label + " a las " + t.time + " h.";
     window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
 
     this.setState(s => {
@@ -507,13 +508,15 @@ class Component extends DCLogic {
     const days = this.dayList();
     const day = days[s.day] || days[0];
     const svc = cfg.services.find(x => x.id === s.svc) || null;
-    const taken = (s.taken[day ? day.key : ""] || []);
+    const fijos = this.readLS("laestudio.fijos", []);
+    const fijoTimes = day ? fijos.filter(f => f.dow === day.date.getDay()).map(f => f.time) : [];
+    const taken = (s.taken[day ? day.key : ""] || []).concat(fijoTimes);
     const senia = svc ? Math.round(svc.price / 2) : 0;
     const dayLabel = day ? DOW[day.date.getDay()] + " " + day.date.getDate() + " de " + MONTH[day.date.getMonth()] : "";
     const turnoLabel = day && s.slot ? dayLabel + ", " + s.slot + " h" : "—";
     const ready1 = !!(svc && s.slot);
     const ready2 = !!(s.nombre.trim() && s.tel.trim());
-    const msg = "Hola LAestudio! Soy " + (s.nombre || "—") + ". Reservé " + (svc ? svc.name : "—") +
+    const msg = "Hola " + cfg.nombre + "! Soy " + (s.nombre || "—") + ". Reservé " + (svc ? svc.name : "—") +
       " para el " + turnoLabel + ". Ya transferí la seña de " + money(senia) + " al alias " + cfg.alias +
       " y les envío el comprobante.";
 
@@ -601,6 +604,7 @@ class Component extends DCLogic {
       senia: money(senia),
       turnoLabel: turnoLabel,
       alias: cfg.alias,
+      nombreNegocio: cfg.nombre,
       nombre: s.nombre,
       tel: s.tel,
       nombreCorto: (s.nombre.trim().split(" ")[0] || "gracias"),
