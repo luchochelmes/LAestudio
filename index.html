@@ -200,24 +200,38 @@
                 </label>
               </div>
 
-              <div style="padding: 30px 30px 26px; border: 1px solid #3A342D; background: linear-gradient(160deg, #16150F, #0B0B0A); border-radius: 3px; margin-bottom: 26px">
-                <p style="margin: 0 0 22px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">Datos para transferir</p>
-                <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 40px">
-                  <div>
-                    <p style="margin: 0 0 8px; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">Alias</p>
-                    <p style="margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 34px; line-height: 1; color: #EDE9E1">{{ alias }}</p>
-                  </div>
-                  <div>
-                    <p style="margin: 0 0 8px; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">Monto de la seña</p>
-                    <p style="margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 34px; line-height: 1; color: #C9A97E">{{ senia }}</p>
-                  </div>
-                  <button type="button" onClick="{{ copyAlias }}" style="margin-left: auto; padding: 13px 20px; border: 1px solid #3A342D; background: transparent; color: #C9A97E; border-radius: 2px; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #C9A97E">{{ copyLabel }}</button>
+              <sc-if value="{{ exento }}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 26px 28px; border: 1px solid #3A342D; background: linear-gradient(160deg, #16150F, #0B0B0A); border-radius: 3px; margin-bottom: 26px">
+                  <p style="margin: 0 0 8px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #C9A97E">Sos cliente habitual</p>
+                  <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #B7B0A6">No hace falta que dejes seña. Confirmá tu turno directo, sin transferencia ni comprobante.</p>
                 </div>
-                <p style="margin: 24px 0 0; font-size: 13px; line-height: 1.6; color: #8E8880">El resto lo pagás en el local. Sin la seña el horario sigue disponible para otra persona.</p>
-              </div>
+              </sc-if>
+
+              <sc-if value="{{ noExento }}" hint-placeholder-val="{{ true }}">
+                <div style="padding: 30px 30px 26px; border: 1px solid #3A342D; background: linear-gradient(160deg, #16150F, #0B0B0A); border-radius: 3px; margin-bottom: 26px">
+                  <p style="margin: 0 0 22px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">Datos para transferir</p>
+                  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 40px">
+                    <div>
+                      <p style="margin: 0 0 8px; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">Alias</p>
+                      <p style="margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 34px; line-height: 1; color: #EDE9E1">{{ alias }}</p>
+                    </div>
+                    <div>
+                      <p style="margin: 0 0 8px; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">Monto de la seña</p>
+                      <p style="margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 34px; line-height: 1; color: #C9A97E">{{ senia }}</p>
+                    </div>
+                    <button type="button" onClick="{{ copyAlias }}" style="margin-left: auto; padding: 13px 20px; border: 1px solid #3A342D; background: transparent; color: #C9A97E; border-radius: 2px; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #C9A97E">{{ copyLabel }}</button>
+                  </div>
+                  <p style="margin: 24px 0 0; font-size: 13px; line-height: 1.6; color: #8E8880">El resto lo pagás en el local. Sin la seña el horario sigue disponible para otra persona.</p>
+                </div>
+              </sc-if>
 
               <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px">
-                <button type="button" onClick="{{ goStep3 }}" disabled="{{ notReady2 }}" style="padding: 18px 32px; border: 0; background: {{ cta2Bg }}; color: {{ cta2Fg }}; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: {{ cta2Cursor }}">Ya transferí</button>
+                <sc-if value="{{ exento }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" onClick="{{ confirmarSinSenia }}" disabled="{{ notReady2 }}" style="padding: 18px 32px; border: 0; background: {{ cta2Bg }}; color: {{ cta2Fg }}; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: {{ cta2Cursor }}">Confirmar turno</button>
+                </sc-if>
+                <sc-if value="{{ noExento }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" onClick="{{ goStep3 }}" disabled="{{ notReady2 }}" style="padding: 18px 32px; border: 0; background: {{ cta2Bg }}; color: {{ cta2Fg }}; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: {{ cta2Cursor }}">Ya transferí</button>
+                </sc-if>
                 <button type="button" onClick="{{ back1 }}" style="padding: 18px 26px; border: 1px solid #2A2621; background: transparent; color: #8E8880; border-radius: 2px; font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="color: #EDE9E1; border-color: #3A342D">Volver</button>
                 <span style="font-size: 12.5px; color: #6E675F">{{ hint2 }}</span>
               </div>
@@ -245,17 +259,27 @@
 
           <sc-if value="{{ isStep4 }}" hint-placeholder-val="{{ false }}">
             <div style="animation: laFade .35s ease both; max-width: 620px">
-              <p style="display: flex; align-items: center; gap: 10px; margin: 0 0 20px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">
-                <span style="display: block; width: 7px; height: 7px; border-radius: 50%; background: #C9A97E; animation: laPulse 1.8s ease-in-out infinite"></span>
-                Pendiente de confirmación
-              </p>
-              <h3 style="margin: 0 0 18px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 38px; line-height: 1.1">Listo, {{ nombreCorto }}. Tu turno quedó reservado.</h3>
-              <p style="margin: 0 0 34px; font-size: 15px; line-height: 1.65; color: #8E8880">El horario ya salió del turnero. Cuando revisemos el comprobante te llega la confirmación por WhatsApp al {{ telPretty }}.</p>
+              <sc-if value="{{ exento }}" hint-placeholder-val="{{ false }}">
+                <p style="display: flex; align-items: center; gap: 10px; margin: 0 0 20px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #7E9A6F">
+                  <span style="display: block; width: 7px; height: 7px; border-radius: 50%; background: #7E9A6F"></span>
+                  Turno confirmado
+                </p>
+                <h3 style="margin: 0 0 18px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 38px; line-height: 1.1">Listo, {{ nombreCorto }}. Tu turno ya está confirmado.</h3>
+                <p style="margin: 0 0 34px; font-size: 15px; line-height: 1.65; color: #8E8880">No hace falta seña. Te esperamos en el horario elegido.</p>
+              </sc-if>
+              <sc-if value="{{ noExento }}" hint-placeholder-val="{{ true }}">
+                <p style="display: flex; align-items: center; gap: 10px; margin: 0 0 20px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">
+                  <span style="display: block; width: 7px; height: 7px; border-radius: 50%; background: #C9A97E; animation: laPulse 1.8s ease-in-out infinite"></span>
+                  Pendiente de confirmación
+                </p>
+                <h3 style="margin: 0 0 18px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 38px; line-height: 1.1">Listo, {{ nombreCorto }}. Tu turno quedó reservado.</h3>
+                <p style="margin: 0 0 34px; font-size: 15px; line-height: 1.65; color: #8E8880">El horario ya salió del turnero. Cuando revisemos el comprobante te llega la confirmación por WhatsApp al {{ telPretty }}.</p>
+              </sc-if>
 
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: #211E1B; border: 1px solid #211E1B; margin-bottom: 30px">
                 <div style="padding: 22px 24px; background: #0E0D0C"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Servicio</p><p style="margin: 0; font-size: 15px">{{ svcName }}</p></div>
                 <div style="padding: 22px 24px; background: #0E0D0C"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Turno</p><p style="margin: 0; font-size: 15px">{{ turnoLabel }}</p></div>
-                <div style="padding: 22px 24px; background: #0E0D0C"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Seña</p><p style="margin: 0; font-size: 15px; color: #C9A97E">{{ senia }} · declarada</p></div>
+                <div style="padding: 22px 24px; background: #0E0D0C"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Seña</p><p style="margin: 0; font-size: 15px; color: #C9A97E">{{ seniaLabel }}</p></div>
               </div>
 
               <sc-if value="{{ hasMiTurno }}" hint-placeholder-val="{{ false }}">
@@ -453,7 +477,7 @@ class Component extends DCLogic {
     return out;
   }
 
-  persist(dayKey, time, svc, nombre, tel) {
+  persist(dayKey, time, svc, nombre, tel, estado) {
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem("laestudio.taken") || "{}"); } catch (e) {}
     saved[dayKey] = (saved[dayKey] || []).concat([time]);
@@ -462,7 +486,7 @@ class Component extends DCLogic {
     const turno = {
       id: "w" + Date.now(), dayKey: dayKey, time: time,
       cliente: nombre || "Sin nombre", tel: tel || "—",
-      svc: svc, estado: "comprobante"
+      svc: svc, estado: estado || "comprobante"
     };
     const turnos = this.readLS("laestudio.turnos", []);
     turnos.push(turno);
@@ -516,6 +540,9 @@ class Component extends DCLogic {
     const turnoLabel = day && s.slot ? dayLabel + ", " + s.slot + " h" : "—";
     const ready1 = !!(svc && s.slot);
     const ready2 = !!(s.nombre.trim() && s.tel.trim());
+    const exentos = this.readLS("laestudio.exentos", []);
+    const telDigits = s.tel.replace(/\D/g, "").slice(-10);
+    const exento = telDigits.length >= 6 && exentos.some(x => (x.tel || "").replace(/\D/g, "").slice(-10) === telDigits);
     const msg = "Hola " + cfg.nombre + "! Soy " + (s.nombre || "—") + ". Reservé " + (svc ? svc.name : "—") +
       " para el " + turnoLabel + ". Ya transferí la seña de " + money(senia) + " al alias " + cfg.alias +
       " y les envío el comprobante.";
@@ -602,6 +629,7 @@ class Component extends DCLogic {
       svcName: svc ? svc.name : "—",
       svcPrice: svc ? money(svc.price) : "—",
       senia: money(senia),
+      seniaLabel: exento ? "Sin seña" : money(senia) + " · declarada",
       turnoLabel: turnoLabel,
       alias: cfg.alias,
       nombreNegocio: cfg.nombre,
@@ -624,6 +652,8 @@ class Component extends DCLogic {
       goStep2: () => { if (ready1) this.setState({ step: 2 }); },
       goStep3: () => { if (ready2) this.setState({ step: 3 }); },
       goStep4: () => { if (day && s.slot) this.persist(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim()); this.setState({ step: 4 }); },
+      exento: exento, noExento: !exento,
+      confirmarSinSenia: () => { if (ready1 && ready2) { this.persist(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim(), "confirmado"); this.setState({ step: 4 }); } },
       back1: () => this.setState({ step: 1 }),
       reset: () => this.setState({ step: 1, svc: null, slot: null, nombre: "", tel: "" }),
       legalOpen: !!s.legal,
