@@ -50,7 +50,7 @@
 
   <header style="position: sticky; top: 0; z-index: 40; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px 40px; background: rgba(47,47,47,.82); backdrop-filter: blur(14px); border-bottom: 1px solid #1E1E1D">
     <a href="#top" style="display: flex; align-items: center; gap: 12px; color: #EDE9E1">
-      <span style="display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #363532; border-radius: 3px; overflow: hidden; background: #2F2F2F"><img src="./logo.jpeg" alt="{{ nombreNegocio }}" style="width: 100%; height: 100%; object-fit: cover"></span>
+      <span style="display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid #363532; border-radius: 3px; overflow: hidden; background: #2F2F2F"><img src="./logo.jpeg" alt="{{ nombreNegocio }}" style="width: 100%; height: 100%; object-fit: cover"></span>
       <span style="display: flex; flex-direction: column; line-height: 1.05">
         <span style="font-family: 'Archivo Black', sans-serif; font-size: 19px; letter-spacing: .01em">{{ nombreNegocio }}</span>
         <span style="font-size: 9.5px; letter-spacing: .28em; text-transform: uppercase; color: #8E8880; margin-top: 3px">Guiñazú · Córdoba</span>
@@ -82,7 +82,7 @@
       </p>
       <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; pointer-events: auto">
         <a href="#turnero" style="display: inline-flex; align-items: center; gap: 12px; padding: 18px 30px; background: #C9A97E; color: #141414; border-radius: 2px; font-size: 13px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase" style-hover="background: #E4CDA8; color: #141414">Reservar turno →</a>
-        <a href="#servicios" style="display: inline-flex; align-items: center; padding: 18px 26px; border: 1px solid #363532; color: #EDE9E1; border-radius: 2px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase" style-hover="border-color: #C9A97E; color: #C9A97E">Ver servicios</a>
+        <a href="#servicios" style="display: inline-flex; align-items: center; padding: 18px 26px; border: 2px solid #363532; color: #EDE9E1; border-radius: 2px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase" style-hover="border-color: #C9A97E; color: #C9A97E">Ver servicios</a>
       </div>
     </div>
   </section>
@@ -101,7 +101,7 @@
       </div>
       <p style="max-width: 320px; margin: 0; font-size: 14.5px; line-height: 1.6; color: #8E8880">Precios finales. La seña es el 50 % y se descuenta del total el día del turno.</p>
     </div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: #1E1E1D; border: 1px solid #1E1E1D">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: #1E1E1D; border: 2px solid #1E1E1D">
       <sc-for list="{{ services }}" as="s" hint-placeholder-count="3">
         <div class="svc-card" style="display: flex; flex-direction: column; gap: 28px; padding: 38px 32px 32px; background: #141414" style-hover="background: #1A1A1A">
           <div class="svc-card-top" style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px">
@@ -128,22 +128,22 @@
       <p style="margin: 0 0 56px; max-width: 520px; font-size: 15px; line-height: 1.6; color: #8E8880">Los horarios que ves están libres ahora mismo. Cuando alguien reserva, el horario desaparece para el resto.</p>
 
       <sc-if value="{{ showMiTurnoBanner }}" hint-placeholder-val="{{ false }}">
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 22px 26px; border: 1px solid #262625; border-left: 3px solid #C9A97E; background: #1A1A1A; margin-bottom: 40px">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 22px 26px; border: 2px solid #262625; border-left: 3px solid #C9A97E; background: #1A1A1A; margin-bottom: 40px">
           <div style="flex: 1 1 260px">
             <p style="margin: 0 0 6px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #C9A97E">Ya tenés un turno reservado</p>
             <p style="margin: 0 0 6px; font-size: 16px">{{ miTurnoLabel }}</p>
             <p style="margin: 0; font-size: 12.5px; color: #8E8880">{{ miTurnoCountdown }}</p>
           </div>
-          <button type="button" onClick="{{ cancelarMiTurno }}" disabled="{{ !miTurnoCanCancel }}" style="flex: 0 0 auto; padding: 14px 22px; border: 1px solid {{ miTurnoCancelBorder }}; background: {{ miTurnoCancelBg }}; color: {{ miTurnoCancelFg }}; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: {{ miTurnoCancelCursor }}" style-hover="border-color: #A9705E">Cancelar turno</button>
+          <button type="button" onClick="{{ cancelarMiTurno }}" disabled="{{ !miTurnoCanCancel }}" style="flex: 0 0 auto; padding: 14px 22px; border: 2px solid {{ miTurnoCancelBorder }}; background: {{ miTurnoCancelBg }}; color: {{ miTurnoCancelFg }}; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: {{ miTurnoCancelCursor }}" style-hover="border-color: #A9705E">Cancelar turno</button>
         </div>
       </sc-if>
 
-      <div class="turnero-grid" style="display: grid; grid-template-columns: 260px 1fr; gap: 1px; background: #1E1E1D; border: 1px solid #1E1E1D">
+      <div class="turnero-grid" style="display: grid; grid-template-columns: 260px 1fr; gap: 1px; background: #1E1E1D; border: 2px solid #1E1E1D">
 
         <aside style="background: #141414; padding: 34px 28px; display: flex; flex-direction: column; gap: 4px">
           <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
             <div style="display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid #1B1815">
-              <span style="flex: 0 0 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; font-size: 11.5px; border: 1px solid {{ st.ring }}; background: {{ st.chipBg }}; color: {{ st.chipFg }}">{{ st.n }}</span>
+              <span style="flex: 0 0 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; font-size: 11.5px; border: 2px solid {{ st.ring }}; background: {{ st.chipBg }}; color: {{ st.chipFg }}">{{ st.n }}</span>
               <span style="display: flex; flex-direction: column; gap: 5px">
                 <span style="font-size: 13.5px; letter-spacing: .04em; color: {{ st.fg }}">{{ st.title }}</span>
                 <span style="font-size: 11.5px; line-height: 1.45; color: #6E675F">{{ st.hint }}</span>
@@ -159,7 +159,7 @@
               <p style="margin: 0 0 18px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">Paso 1 · Servicio</p>
               <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 42px">
                 <sc-for list="{{ services }}" as="s" hint-placeholder-count="3">
-                  <button type="button" class="svc-btn" onClick="{{ s.select }}" style="display: flex; flex-direction: column; gap: 6px; align-items: flex-start; padding: 16px 22px; border: 1px solid {{ s.border }}; background: {{ s.bg }}; color: #EDE9E1; border-radius: 2px; cursor: pointer; text-align: left">
+                  <button type="button" class="svc-btn" onClick="{{ s.select }}" style="display: flex; flex-direction: column; gap: 6px; align-items: flex-start; padding: 16px 22px; border: 2px solid {{ s.border }}; background: {{ s.bg }}; color: #EDE9E1; border-radius: 2px; cursor: pointer; text-align: left">
                     <span style="font-size: 15px; letter-spacing: .02em">{{ s.name }}</span>
                     <span style="font-size: 12px; color: #8E8880">{{ s.duration }} · {{ s.price }}</span>
                   </button>
@@ -169,7 +169,7 @@
               <p style="margin: 0 0 18px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">Paso 1 · Día y hora</p>
               <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 26px">
                 <sc-for list="{{ days }}" as="d" hint-placeholder-count="5">
-                  <button type="button" class="day-btn" onClick="{{ d.select }}" style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 78px; padding: 14px 0; border: 1px solid {{ d.border }}; background: {{ d.bg }}; color: {{ d.fg }}; border-radius: 2px; cursor: pointer">
+                  <button type="button" class="day-btn" onClick="{{ d.select }}" style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 78px; padding: 14px 0; border: 2px solid {{ d.border }}; background: {{ d.bg }}; color: {{ d.fg }}; border-radius: 2px; cursor: pointer">
                     <span style="font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">{{ d.dow }}</span>
                     <span style="font-family: 'Archivo Black', sans-serif; font-size: 26px; line-height: 1">{{ d.dayNum }}</span>
                     <span style="font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #6E675F">{{ d.month }}</span>
@@ -179,7 +179,7 @@
 
               <div class="slots-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(94px, 1fr)); gap: 8px">
                 <sc-for list="{{ slots }}" as="t" hint-placeholder-count="20">
-                  <button type="button" class="slot-btn" onClick="{{ t.select }}" disabled="{{ t.taken }}" style="padding: 14px 0; border: 1px solid {{ t.border }}; background: {{ t.bg }}; color: {{ t.fg }}; border-radius: 2px; font-size: 14px; letter-spacing: .06em; cursor: {{ t.cursor }}; text-decoration: {{ t.strike }}">{{ t.label }}</button>
+                  <button type="button" class="slot-btn" onClick="{{ t.select }}" disabled="{{ t.taken }}" style="padding: 14px 0; border: 2px solid {{ t.border }}; background: {{ t.bg }}; color: {{ t.fg }}; border-radius: 2px; font-size: 14px; letter-spacing: .06em; cursor: {{ t.cursor }}; text-decoration: {{ t.strike }}">{{ t.label }}</button>
                 </sc-for>
               </div>
 
@@ -195,7 +195,7 @@
               <p style="margin: 0 0 18px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">Paso 2 · Seña del 50 %</p>
               <h3 style="margin: 0 0 30px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 34px; line-height: 1.1">Transferí la seña para guardar el horario</h3>
 
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: #1E1E1D; border: 1px solid #1E1E1D; margin-bottom: 32px">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: #1E1E1D; border: 2px solid #1E1E1D; margin-bottom: 32px">
                 <div style="padding: 20px 22px; background: #141414"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Servicio</p><p style="margin: 0; font-size: 15px">{{ svcName }}</p></div>
                 <div style="padding: 20px 22px; background: #141414"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Turno</p><p style="margin: 0; font-size: 15px">{{ turnoLabel }}</p></div>
                 <div style="padding: 20px 22px; background: #141414"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Total</p><p style="margin: 0; font-size: 15px">{{ svcPrice }}</p></div>
@@ -204,23 +204,23 @@
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 30px">
                 <label style="display: flex; flex-direction: column; gap: 9px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
                   Tu nombre
-                  <input type="text" value="{{ nombre }}" onChange="{{ setNombre }}" placeholder="Nombre y apellido" style="padding: 15px 16px; background: #141414; border: 1px solid #262625; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+                  <input type="text" value="{{ nombre }}" onChange="{{ setNombre }}" placeholder="Nombre y apellido" style="padding: 15px 16px; background: #141414; border: 2px solid #262625; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
                 </label>
                 <label style="display: flex; flex-direction: column; gap: 9px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
                   Tu WhatsApp
-                  <input type="tel" value="{{ tel }}" onChange="{{ setTel }}" placeholder="351 000 0000" style="padding: 15px 16px; background: #141414; border: 1px solid #262625; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+                  <input type="tel" value="{{ tel }}" onChange="{{ setTel }}" placeholder="351 000 0000" style="padding: 15px 16px; background: #141414; border: 2px solid #262625; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
                 </label>
               </div>
 
               <sc-if value="{{ exento }}" hint-placeholder-val="{{ false }}">
-                <div style="padding: 26px 28px; border: 1px solid #363532; background: linear-gradient(160deg, #171716, #141414); border-radius: 3px; margin-bottom: 26px">
+                <div style="padding: 26px 28px; border: 2px solid #363532; background: linear-gradient(160deg, #171716, #141414); border-radius: 3px; margin-bottom: 26px">
                   <p style="margin: 0 0 8px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #C9A97E">Sos cliente habitual</p>
                   <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #B7B0A6">No hace falta que dejes seña. Confirmá tu turno directo, sin transferencia ni comprobante.</p>
                 </div>
               </sc-if>
 
               <sc-if value="{{ noExento }}" hint-placeholder-val="{{ true }}">
-                <div style="padding: 30px 30px 26px; border: 1px solid #363532; background: linear-gradient(160deg, #171716, #141414); border-radius: 3px; margin-bottom: 26px">
+                <div style="padding: 30px 30px 26px; border: 2px solid #363532; background: linear-gradient(160deg, #171716, #141414); border-radius: 3px; margin-bottom: 26px">
                   <p style="margin: 0 0 22px; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: #C9A97E">Datos para transferir</p>
                   <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 40px">
                     <div>
@@ -231,7 +231,7 @@
                       <p style="margin: 0 0 8px; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">Monto de la seña</p>
                       <p style="margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 34px; line-height: 1; color: #C9A97E">{{ senia }}</p>
                     </div>
-                    <button type="button" onClick="{{ copyAlias }}" style="margin-left: auto; padding: 13px 20px; border: 1px solid #363532; background: transparent; color: #C9A97E; border-radius: 2px; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #C9A97E">{{ copyLabel }}</button>
+                    <button type="button" onClick="{{ copyAlias }}" style="margin-left: auto; padding: 13px 20px; border: 2px solid #363532; background: transparent; color: #C9A97E; border-radius: 2px; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #C9A97E">{{ copyLabel }}</button>
                   </div>
                   <p style="margin: 24px 0 0; font-size: 13px; line-height: 1.6; color: #8E8880">El resto lo pagás en el local. Sin la seña el horario sigue disponible para otra persona.</p>
                 </div>
@@ -244,7 +244,7 @@
                 <sc-if value="{{ noExento }}" hint-placeholder-val="{{ true }}">
                   <button type="button" onClick="{{ goStep3 }}" disabled="{{ notReady2 }}" style="padding: 18px 32px; border: 0; background: {{ cta2Bg }}; color: {{ cta2Fg }}; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: {{ cta2Cursor }}">Ya transferí</button>
                 </sc-if>
-                <button type="button" onClick="{{ back1 }}" style="padding: 18px 26px; border: 1px solid #262625; background: transparent; color: #8E8880; border-radius: 2px; font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="color: #EDE9E1; border-color: #363532">Volver</button>
+                <button type="button" onClick="{{ back1 }}" style="padding: 18px 26px; border: 2px solid #262625; background: transparent; color: #8E8880; border-radius: 2px; font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="color: #EDE9E1; border-color: #363532">Volver</button>
                 <span style="font-size: 12.5px; color: #6E675F">{{ hint2 }}</span>
               </div>
             </div>
@@ -256,7 +256,7 @@
               <h3 style="margin: 0 0 18px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 34px; line-height: 1.1">Mandanos el comprobante por WhatsApp</h3>
               <p style="margin: 0 0 32px; font-size: 15px; line-height: 1.65; color: #8E8880">Toque el botón: se abre WhatsApp con el mensaje ya escrito. Adjuntá la captura de la transferencia y enviá.</p>
 
-              <div style="padding: 26px 28px; border: 1px solid #1E1E1D; background: #141414; border-radius: 3px; margin-bottom: 26px">
+              <div style="padding: 26px 28px; border: 2px solid #1E1E1D; background: #141414; border-radius: 3px; margin-bottom: 26px">
                 <p style="margin: 0 0 12px; font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: #6E675F">WhatsApp del local</p>
                 <p style="margin: 0 0 22px; font-family: 'Archivo Black', sans-serif; font-size: 30px; line-height: 1">{{ waPretty }}</p>
                 <p style="margin: 0; padding: 18px 20px; background: #1A1A1A; border-left: 2px solid #C9A97E; font-size: 14px; line-height: 1.65; color: #B7B0A6; white-space: pre-line">{{ waPreview }}</p>
@@ -264,7 +264,7 @@
 
               <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px">
                 <a href="{{ waLink }}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 12px; padding: 18px 30px; background: #C9A97E; color: #141414; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase" style-hover="background: #E4CDA8; color: #141414">Abrir WhatsApp →</a>
-                <button type="button" onClick="{{ goStep4 }}" style="padding: 18px 26px; border: 1px solid #363532; background: transparent; color: #EDE9E1; border-radius: 2px; font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #C9A97E; color: #C9A97E">Ya envié el comprobante</button>
+                <button type="button" onClick="{{ goStep4 }}" style="padding: 18px 26px; border: 2px solid #363532; background: transparent; color: #EDE9E1; border-radius: 2px; font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="border-color: #C9A97E; color: #C9A97E">Ya envié el comprobante</button>
               </div>
             </div>
           </sc-if>
@@ -288,20 +288,20 @@
                 <p style="margin: 0 0 34px; font-size: 15px; line-height: 1.65; color: #8E8880">El horario ya salió del turnero. Cuando revisemos el comprobante te llega la confirmación por WhatsApp al {{ telPretty }}.</p>
               </sc-if>
 
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: #1E1E1D; border: 1px solid #1E1E1D; margin-bottom: 30px">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: #1E1E1D; border: 2px solid #1E1E1D; margin-bottom: 30px">
                 <div style="padding: 22px 24px; background: #141414"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Servicio</p><p style="margin: 0; font-size: 15px">{{ svcName }}</p></div>
                 <div style="padding: 22px 24px; background: #141414"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Turno</p><p style="margin: 0; font-size: 15px">{{ turnoLabel }}</p></div>
                 <div style="padding: 22px 24px; background: #141414"><p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Seña</p><p style="margin: 0; font-size: 15px; color: #C9A97E">{{ seniaLabel }}</p></div>
               </div>
 
               <sc-if value="{{ hasMiTurno }}" hint-placeholder-val="{{ false }}">
-                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 20px 22px; border: 1px solid #262625; margin-bottom: 26px">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 20px 22px; border: 2px solid #262625; margin-bottom: 26px">
                   <p style="margin: 0; flex: 1 1 220px; font-size: 12.5px; line-height: 1.6; color: #8E8880">{{ miTurnoCountdown }}</p>
-                  <button type="button" onClick="{{ cancelarMiTurno }}" disabled="{{ !miTurnoCanCancel }}" style="flex: 0 0 auto; padding: 13px 20px; border: 1px solid {{ miTurnoCancelBorder }}; background: {{ miTurnoCancelBg }}; color: {{ miTurnoCancelFg }}; border-radius: 2px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; cursor: {{ miTurnoCancelCursor }}" style-hover="border-color: #A9705E">Cancelar turno</button>
+                  <button type="button" onClick="{{ cancelarMiTurno }}" disabled="{{ !miTurnoCanCancel }}" style="flex: 0 0 auto; padding: 13px 20px; border: 2px solid {{ miTurnoCancelBorder }}; background: {{ miTurnoCancelBg }}; color: {{ miTurnoCancelFg }}; border-radius: 2px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; cursor: {{ miTurnoCancelCursor }}" style-hover="border-color: #A9705E">Cancelar turno</button>
                 </div>
               </sc-if>
 
-              <button type="button" onClick="{{ reset }}" style="padding: 16px 26px; border: 1px solid #262625; background: transparent; color: #8E8880; border-radius: 2px; font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="color: #EDE9E1; border-color: #363532">Reservar otro turno</button>
+              <button type="button" onClick="{{ reset }}" style="padding: 16px 26px; border: 2px solid #262625; background: transparent; color: #8E8880; border-radius: 2px; font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="color: #EDE9E1; border-color: #363532">Reservar otro turno</button>
             </div>
           </sc-if>
 
@@ -315,7 +315,7 @@
       <div style="padding: 100px 40px 100px; max-width: 620px; margin-left: auto; width: 100%">
         <p style="margin: 0 0 14px; font-size: 11px; letter-spacing: .34em; text-transform: uppercase; color: #C9A97E">03 — Ubicación</p>
         <h2 style="margin: 0 0 34px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: clamp(38px, 5vw, 58px); line-height: 1">Guiñazú, Córdoba</h2>
-        <dl style="display: grid; gap: 1px; margin: 0 0 34px; background: #1E1E1D; border: 1px solid #1E1E1D">
+        <dl style="display: grid; gap: 1px; margin: 0 0 34px; background: #1E1E1D; border: 2px solid #1E1E1D">
           <div style="display: flex; flex-wrap: wrap; gap: 8px 28px; padding: 20px 24px; background: #141414">
             <dt style="flex: 0 0 130px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #6E675F">Dirección</dt>
             <dd style="margin: 0; font-size: 15px; color: #B7B0A6">Del Erquencho 180, Barrio Guiñazú, Córdoba</dd>
@@ -361,10 +361,10 @@
 
   <sc-if value="{{ legalOpen }}" hint-placeholder-val="{{ false }}">
     <div style="position: fixed; inset: 0; z-index: 80; background: rgba(5,5,4,.78); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 20px">
-      <div style="width: 100%; max-width: 640px; max-height: 86vh; overflow-y: auto; background: #141414; border: 1px solid #262625; padding: 34px 30px">
+      <div style="width: 100%; max-width: 640px; max-height: 86vh; overflow-y: auto; background: #141414; border: 2px solid #262625; padding: 34px 30px">
         <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px">
           <h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 28px; line-height: 1.05; text-transform: none; letter-spacing: normal">{{ legalTitle }}</h3>
-          <button type="button" onClick="{{ closeLegal }}" style="width: 34px; height: 34px; flex: 0 0 auto; border: 1px solid #262625; background: transparent; color: #8E8880; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="color: #EDE9E1">✕</button>
+          <button type="button" onClick="{{ closeLegal }}" style="width: 34px; height: 34px; flex: 0 0 auto; border: 2px solid #262625; background: transparent; color: #8E8880; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="color: #EDE9E1">✕</button>
         </div>
         <div style="display: grid; gap: 14px">
           <sc-for list="{{ legalParas }}" as="p" hint-placeholder-count="6">
