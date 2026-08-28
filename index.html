@@ -128,7 +128,7 @@
       <p style="margin: 0 0 56px; max-width: 520px; font-size: 15px; line-height: 1.6; color: #8E8880">Los horarios que ves están libres ahora mismo. Cuando alguien reserva, el horario desaparece para el resto.</p>
 
       <sc-if value="{{ showMiTurnoBanner }}" hint-placeholder-val="{{ false }}">
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 22px 26px; border: 1px solid #262625; border-left: 3px solid #C9A97E; background: #14120E; margin-bottom: 40px">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 22px 26px; border: 1px solid #262625; border-left: 3px solid #C9A97E; background: #1A1A1A; margin-bottom: 40px">
           <div style="flex: 1 1 260px">
             <p style="margin: 0 0 6px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #C9A97E">Ya tenés un turno reservado</p>
             <p style="margin: 0 0 6px; font-size: 16px">{{ miTurnoLabel }}</p>
@@ -579,7 +579,7 @@ class Component extends DCLogic {
       miTurnoInfo = {
         label: mtLabel, svcName: mtSvc ? mtSvc.name : "—", canCancel: canCancel,
         countdownText: countdownText,
-        cancelBg: canCancel ? "transparent" : "#161412",
+        cancelBg: canCancel ? "transparent" : "#1A1A1A",
         cancelFg: canCancel ? "#C98E7E" : "#4E4740",
         cancelBorder: canCancel ? "#363532" : "#1E1E1D",
         cancelCursor: canCancel ? "pointer" : "not-allowed"
@@ -591,7 +591,7 @@ class Component extends DCLogic {
         num: "0" + (i + 1), name: x.name, duration: x.duration + " min",
         price: money(x.price), deposit: money(Math.round(x.price / 2)),
         border: s.svc === x.id ? "#C9A97E" : "#262625",
-        bg: s.svc === x.id ? "#17150F" : "#141414",
+        bg: s.svc === x.id ? "#262625" : "#141414",
         select: () => this.setState({ svc: x.id })
       })),
       steps: [
@@ -611,7 +611,7 @@ class Component extends DCLogic {
       days: days.map((d, i) => ({
         dow: DOW[d.date.getDay()], dayNum: d.date.getDate(), month: MONTH[d.date.getMonth()],
         border: s.day === i ? "#C9A97E" : "#262625",
-        bg: s.day === i ? "#17150F" : "#141414",
+        bg: s.day === i ? "#262625" : "#141414",
         fg: s.day === i ? "#EDE9E1" : "#B7B0A6",
         select: () => this.setState({ day: i, slot: null })
       })),

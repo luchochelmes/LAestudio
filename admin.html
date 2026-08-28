@@ -165,10 +165,10 @@
                     </sc-for>
                   </div>
                   <sc-for list="{{ weekRows }}" as="wr" hint-placeholder-count="20">
-                    <div style="display: grid; grid-template-columns: 62px repeat(5, 1fr); border-bottom: 1px solid #141210">
+                    <div style="display: grid; grid-template-columns: 62px repeat(5, 1fr); border-bottom: 1px solid #1E1E1D">
                       <div style="padding: 7px 8px; font-size: 11px; color: #6E675F; background: #141414">{{ wr.time }}</div>
                       <sc-for list="{{ wr.cells }}" as="c" hint-placeholder-count="5">
-                        <div style="padding: 6px 8px; border-left: 1px solid #141210; background: {{ c.bg }}; min-height: 34px; display: flex; align-items: center; gap: 7px; overflow: hidden">
+                        <div style="padding: 6px 8px; border-left: 1px solid #1E1E1D; background: {{ c.bg }}; min-height: 34px; display: flex; align-items: center; gap: 7px; overflow: hidden">
                           <span style="flex: 0 0 auto; display: block; width: 6px; height: 6px; border-radius: 50%; background: {{ c.dot }}"></span>
                           <span style="font-size: 11.5px; color: {{ c.fg }}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ c.label }}</span>
                         </div>
@@ -565,7 +565,7 @@ const EST = {
   pendiente: { label: "Pendiente de pago", color: "#C9A97E" },
   comprobante: { label: "Comprobante enviado", color: "#B7B0A6" },
   confirmado: { label: "Confirmado", color: "#7E9A6F" },
-  cancelado: { label: "Cancelado", color: "#5E564E" }
+  cancelado: { label: "Cancelado", color: "#6E675F" }
 };
 const NAMES = ["Nicolás Ferreyra", "Brian Ludueña", "Matías Sosa", "Lucas Peralta", "Ariel Gómez", "Joaquín Ríos", "Emiliano Vega", "Franco Molina", "Damián Ávila", "Iván Cáceres", "Tomás Bustos", "Gonzalo Ponce"];
 const IDS = ["corte", "barba", "corte-barba"];
@@ -1020,7 +1020,7 @@ class Component extends DCLogic {
       const est = turno ? EST[turno.estado] : null;
       return {
         time: t,
-        rowBg: turno ? "#141414" : blocked ? "#0A0908" : "transparent",
+        rowBg: turno ? "#141414" : blocked ? "#0F0F0F" : "transparent",
         accent: turno ? est.color : blocked ? "#262625" : "#161412",
         cliente: turno ? turno.cliente : blocked ? "Bloqueado" : "Libre",
         nameFg: turno ? "#EDE9E1" : "#4E4740",
@@ -1048,7 +1048,7 @@ class Component extends DCLogic {
         const k = key(d), turno = at(k, t), blocked = bl(k).indexOf(t) > -1;
         const est = turno ? EST[turno.estado] : null;
         return {
-          bg: turno ? "#1A1A1A" : blocked ? "#0C0B0A" : "transparent",
+          bg: turno ? "#1A1A1A" : blocked ? "#0F0F0F" : "transparent",
           dot: turno ? est.color : blocked ? "#262625" : "#1B1815",
           fg: turno ? "#B7B0A6" : "#363532",
           label: turno ? turno.cliente.split(" ")[0] + " · " + svcOf(turno.svc).name : blocked ? "bloqueado" : "libre"
@@ -1082,7 +1082,7 @@ class Component extends DCLogic {
           return {
             time: t, busy: isBusy,
             border: isBusy ? "#1B1815" : isBlocked ? "#363532" : "#262625",
-            bg: isBusy ? "#0A0908" : isBlocked ? "#1E1E1D" : "#141414",
+            bg: isBusy ? "#0F0F0F" : isBlocked ? "#1E1E1D" : "#141414",
             fg: isBusy ? "#363532" : isBlocked ? "#8E8880" : "#EDE9E1",
             cursor: isBusy ? "not-allowed" : "pointer",
             strike: isBlocked ? "line-through" : "none",
