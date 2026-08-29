@@ -556,69 +556,15 @@ const ADMIN_PASS = "laestudio123";
 const DIRECCION = "Del Erquencho 180, Barrio Guiñazú, Córdoba";
 const DOW = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 const MONTH = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-const SVC = {
-  "corte": { name: "Corte", price: 15000 },
-  "barba": { name: "Barba", price: 5000 },
-  "corte-barba": { name: "Corte + barba", price: 18000 }
-};
 const EST = {
   pendiente: { label: "Pendiente de pago", color: "#C9A97E" },
   comprobante: { label: "Comprobante enviado", color: "#B7B0A6" },
   confirmado: { label: "Confirmado", color: "#7E9A6F" },
   cancelado: { label: "Cancelado", color: "#6E675F" }
 };
-const NAMES = ["Nicolás Ferreyra", "Brian Ludueña", "Matías Sosa", "Lucas Peralta", "Ariel Gómez", "Joaquín Ríos", "Emiliano Vega", "Franco Molina", "Damián Ávila", "Iván Cáceres", "Tomás Bustos", "Gonzalo Ponce"];
-const IDS = ["corte", "barba", "corte-barba"];
 
 const money = n => "$" + n.toLocaleString("es-AR");
 const key = d => d.toISOString().slice(0, 10);
-const times = () => { const o = []; for (let h = 10; h < 20; h++) { o.push(h + ":00"); o.push(h + ":30"); } return o; };
-
-function bizDays(from, count, dir) {
-  const out = [], d = new Date(from);
-  d.setHours(0, 0, 0, 0);
-  while (out.length < count) {
-    d.setDate(d.getDate() + dir);
-    if (d.getDay() >= 2 && d.getDay() <= 6) out.push(new Date(d));
-  }
-  return dir < 0 ? out.reverse() : out;
-}
-
-function seed() {
-  const list = [];
-  const past = bizDays(new Date(), 8, -1);
-  const future = bizDays(new Date(), 8, 1);
-  past.forEach((d, i) => {
-    times().forEach((t, j) => {
-      if ((d.getDate() * 3 + j * 7 + i) % 5 === 0) {
-        const n = (d.getDate() + j) % NAMES.length;
-        list.push({ id: "s" + i + "-" + j, dayKey: key(d), time: t, cliente: NAMES[n], tel: "351 " + (200 + n) + " " + (1000 + j * 7),
-          svc: IDS[(i + j) % 3], estado: (d.getDate() + j) % 9 === 0 ? "cancelado" : "confirmado", origen: (i + j) % 4 === 0 ? "Manual" : "Web" });
-      }
-    });
-  });
-  const PLAN = [
-    [[0, "confirmado"], [3, "comprobante"], [5, "confirmado"], [9, "pendiente"], [12, "comprobante"], [15, "confirmado"], [18, "confirmado"]],
-    [[1, "confirmado"], [4, "comprobante"], [8, "confirmado"], [11, "pendiente"], [16, "confirmado"]],
-    [[2, "confirmado"], [6, "comprobante"], [10, "confirmado"], [14, "confirmado"], [19, "pendiente"]],
-    [[0, "confirmado"], [7, "confirmado"], [13, "confirmado"], [17, "confirmado"]],
-    [[5, "confirmado"], [8, "confirmado"], [16, "confirmado"]],
-    [[2, "confirmado"], [11, "confirmado"], [18, "confirmado"]],
-    [[4, "confirmado"], [13, "confirmado"]],
-    [[6, "confirmado"], [15, "confirmado"]]
-  ];
-  future.forEach((d, i) => {
-    const plan = PLAN[i] || [];
-    plan.forEach((p, idx) => {
-      const j = p[0], t = times()[j];
-      const n = (i * 7 + idx) % NAMES.length;
-      list.push({ id: "f" + i + "-" + j, dayKey: key(d), time: t, cliente: NAMES[n],
-        tel: "351 " + (200 + n) + " " + (1000 + j * 7), svc: IDS[(i + idx) % 3],
-        estado: p[1], origen: (i + idx) % 5 === 0 ? "Manual" : "Web" });
-    });
-  });
-  return list;
-}
 
 class Component extends DCLogic {
   state = {
@@ -650,7 +596,7 @@ class Component extends DCLogic {
       nombre: c.nombre ? c.nombre : def.nombre
     };
     this.setState({
-      turnos: seed().concat(this.fromWeb()), bloqueos: this.readLS("laestudio.bloqueos", {}),
+      turnos: this.fromWeb(), bloqueos: this.readLS("laestudio.bloqueos", {}),
       config, fijos: this.readLS("laestudio.fijos", []), exentos: this.readLS("laestudio.exentos", []),
       pendHorario: { hourStart: cfgNow.hourStart, hourEnd: cfgNow.hourEnd, days: cfgNow.days.slice(), breakEnabled: cfgNow.breakEnabled, breakStart: cfgNow.breakStart, breakEnd: cfgNow.breakEnd },
       pendGenerales: { nombre: cfgNow.nombre, alias: cfgNow.alias },

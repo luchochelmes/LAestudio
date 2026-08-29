@@ -415,15 +415,7 @@ class Component extends DCLogic {
   componentDidMount() {
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem("laestudio.taken") || "{}"); } catch (e) {}
-    const seeded = {};
-    this.dayList().forEach((d, i) => {
-      const times = this.timeList();
-      const busy = [];
-      times.forEach((t, j) => { if ((i * 7 + j * 5 + d.date.getDate()) % 4 === 0) busy.push(t); });
-      seeded[d.key] = busy;
-    });
-    Object.keys(saved).forEach(k => { seeded[k] = (seeded[k] || []).concat(saved[k]); });
-    this.setState({ taken: seeded, miTurno: this.readMiTurno() });
+    this.setState({ taken: saved, miTurno: this.readMiTurno() });
     this._tick = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 20000);
     this.onStorage = () => this.setState(s => ({ tick: s.tick + 1 }));
     window.addEventListener("storage", this.onStorage);
