@@ -79,7 +79,7 @@
           <span style="font-size: 12px; color: #6E675F">{{ lastSync }}</span>
           <div class="bo-header-actions" style="margin-left: auto; display: flex; align-items: center; gap: 10px">
             <button type="button" onClick="{{ openManual }}" style="padding: 12px 18px; border: 2px solid #363532; background: transparent; color: #C9A97E; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; white-space: nowrap" style-hover="border-color: #C9A97E">+ Turno manual</button>
-            <button type="button" onClick="{{ openPw }}" style="padding: 12px 16px; border: 2px solid #4E4A46; background: transparent; color: #6E675F; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; white-space: nowrap" style-hover="color: #EDE9E1">Contraseña</button>
+            <button type="button" onClick="{{ openPw }}" style="padding: 12px 16px; border: 2px solid #4E4A46; background: transparent; color: #6E675F; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; white-space: nowrap" style-hover="color: #EDE9E1">Acceso</button>
             <button type="button" onClick="{{ logout }}" style="padding: 12px 16px; border: 2px solid #4E4A46; background: transparent; color: #6E675F; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer" style-hover="color: #EDE9E1">Salir</button>
           </div>
         </div>
@@ -512,11 +512,21 @@
             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px">
               <div>
                 <p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: #C9A97E">Seguridad</p>
-                <h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 28px; line-height: 1.05">Cambiar contraseña</h3>
+                <h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 28px; line-height: 1.05">Acceso al panel</h3>
               </div>
               <button type="button" onClick="{{ closePw }}" style="width: 34px; height: 34px; border: 2px solid #4E4A46; background: transparent; color: #8E8880; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="color: #EDE9E1">✕</button>
             </div>
+            <div style="display: grid; gap: 12px; margin-bottom: 26px; padding-bottom: 26px; border-bottom: 1px solid #4E4A46">
+              <p style="margin: 0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">Cambiar usuario</p>
+              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
+                Usuario nuevo
+                <input type="text" value="{{ userNew }}" onChange="{{ setUserNew }}" placeholder="{{ currentUserLabel }}" style="padding: 14px 15px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
+              </label>
+              <p style="margin: 0; min-height: 16px; font-size: 12.5px; color: #C9A97E">{{ userError }}</p>
+              <button type="button" onClick="{{ saveUser }}" style="padding: 17px; border: 0; background: #C9A97E; color: #141414; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Guardar usuario</button>
+            </div>
             <div style="display: grid; gap: 12px">
+              <p style="margin: 0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">Cambiar contraseña</p>
               <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
                 Contraseña actual
                 <input type="password" value="{{ pwCurrent }}" onChange="{{ setPwCurrent }}" placeholder="••••••••" style="padding: 14px 15px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
@@ -552,6 +562,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
 const WA_LOCAL = "5493512524591";
+const ADMIN_USER = "laestudio";
 const ADMIN_PASS = "laestudio123";
 const DIRECCION = "Del Erquencho 180, Barrio Guiñazú, Córdoba";
 const DOW = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
@@ -573,6 +584,7 @@ class Component extends DCLogic {
     turnos: [], bloqueos: {}, toast: "",
     manualOpen: false, mNombre: "", mTel: "", mSvc: "corte", mDay: "", mTime: "10:00", mConfirmado: true, manualError: "",
     pwOpen: false, pwCurrent: "", pwNew: "", pwNew2: "", pwError: "",
+    userNew: "", userError: "",
     config: null, cfgNewName: "", cfgNewDuration: 30, cfgNewPrice: "", cfgError: "",
     pendHorario: null, pendGenerales: null, pendServices: null,
     fijos: [], fNombre: "", fTel: "", fSvc: "", fDow: null, fTime: "", fError: "",
@@ -796,12 +808,23 @@ class Component extends DCLogic {
   }
 
   currentPass() { return this.readLS("laestudio.adminPass", null) || ADMIN_PASS; }
+  currentUser() { return this.readLS("laestudio.adminUser", null) || ADMIN_USER; }
 
   tryLogin() {
     const s = this.state;
     if (!s.user.trim() || !s.pass.trim()) this.setState({ loginError: "Ingresá usuario y contraseña." });
+    else if (s.user.trim() !== this.currentUser()) this.setState({ loginError: "Usuario incorrecto." });
     else if (s.pass !== this.currentPass()) this.setState({ loginError: "Contraseña incorrecta." });
     else this.setState({ authed: true, loginError: "" });
+  }
+
+  tryChangeUser() {
+    const s = this.state;
+    if (!s.userNew.trim()) { this.setState({ userError: "Completá el nuevo usuario." }); return; }
+    if (s.userNew.trim().length < 3) { this.setState({ userError: "El usuario debe tener al menos 3 caracteres." }); return; }
+    this.writeLS("laestudio.adminUser", s.userNew.trim());
+    this.setState({ userNew: "", userError: "" });
+    this.flash("Usuario actualizado");
   }
 
   tryChangePass() {
@@ -1106,13 +1129,17 @@ class Component extends DCLogic {
       },
       hasToast: !!s.toast, toast: s.toast,
       pwOpen: s.pwOpen,
-      openPw: () => this.setState({ pwOpen: true, pwCurrent: "", pwNew: "", pwNew2: "", pwError: "" }),
+      openPw: () => this.setState({ pwOpen: true, pwCurrent: "", pwNew: "", pwNew2: "", pwError: "", userNew: "", userError: "" }),
       closePw: () => this.setState({ pwOpen: false }),
       pwCurrent: s.pwCurrent, pwNew: s.pwNew, pwNew2: s.pwNew2, pwError: s.pwError,
       setPwCurrent: e => this.setState({ pwCurrent: e.target.value }),
       setPwNew: e => this.setState({ pwNew: e.target.value }),
       setPwNew2: e => this.setState({ pwNew2: e.target.value }),
       savePw: () => this.tryChangePass(),
+      currentUserLabel: this.currentUser(),
+      userNew: s.userNew, userError: s.userError,
+      setUserNew: e => this.setState({ userNew: e.target.value }),
+      saveUser: () => this.tryChangeUser(),
       isConfig: s.tab === "config",
       cfgHourStart: pendH.hourStart, cfgHourEnd: pendH.hourEnd,
       cfgHourOptions: Array.from({ length: 15 }, (_, i) => i + 7).map(h => ({ value: h, label: h + ":00" })),
