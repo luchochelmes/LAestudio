@@ -14,6 +14,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
 <script src="./image-slot.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="./firebase-config.js"></script>
 <style>
   html, body { margin: 0; padding: 0; background: #2F2F2F; }
   * { box-sizing: border-box; }
@@ -410,18 +413,42 @@ const TERMS_PARAS = [
 ];
 
 class Component extends DCLogic {
-  state = { step: 1, svc: null, day: 0, slot: null, nombre: "", tel: "", taken: {}, copied: false, legal: null, miTurno: null, tick: 0 };
+  state = { step: 1, svc: null, day: 0, slot: null, nombre: "", tel: "", turnos: [], fijos: [], exentos: [], config: null, copied: false, legal: null, miTurno: null, tick: 0 };
+  fbReady = false;
 
   componentDidMount() {
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem("laestudio.taken") || "{}"); } catch (e) {}
-    this.setState({ taken: saved, miTurno: this.readMiTurno() });
+    this.setState({ miTurno: this.readMiTurno() });
     this._tick = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 20000);
-    this.onStorage = () => this.setState(s => ({ tick: s.tick + 1 }));
-    window.addEventListener("storage", this.onStorage);
+    this.initFirebase();
   }
 
-  componentWillUnmount() { clearInterval(this._tick); window.removeEventListener("storage", this.onStorage); }
+  componentWillUnmount() { clearInterval(this._tick); }
+
+  initFirebase() {
+    try {
+      const cfg = window.LBESTUDIO_FIREBASE_CONFIG;
+      if (!cfg || !cfg.enabled || typeof firebase === "undefined") return;
+      if (!firebase.apps.length) firebase.initializeApp(cfg);
+      this.db = firebase.firestore();
+      this.fbReady = true;
+
+      this.db.collection("turnos").onSnapshot(snap => {
+        this.setState({ turnos: snap.docs.map(d => Object.assign({ id: d.id }, d.data())) });
+      }, err => console.error("[firebase] turnos listener", err));
+
+      this.db.collection("config").doc("main").onSnapshot(doc => {
+        this.setState({ config: doc.exists ? doc.data() : null });
+      }, err => console.error("[firebase] config listener", err));
+
+      this.db.collection("fijos").onSnapshot(snap => {
+        this.setState({ fijos: snap.docs.map(d => Object.assign({ id: d.id }, d.data())) });
+      }, err => console.error("[firebase] fijos listener", err));
+
+      this.db.collection("exentos").onSnapshot(snap => {
+        this.setState({ exentos: snap.docs.map(d => Object.assign({ id: d.id }, d.data())) });
+      }, err => console.error("[firebase] exentos listener", err));
+    } catch (e) { console.error("[firebase] init error", e); }
+  }
 
   readLS(k, fb) { try { return JSON.parse(localStorage.getItem(k) || "null") || fb; } catch (e) { return fb; } }
   writeLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -437,7 +464,7 @@ class Component extends DCLogic {
   }
 
   cfg() {
-    const c = this.readLS("laestudio.config", null) || {};
+    const c = this.state.config || {};
     const def = this.defaultConfig();
     return {
       services: (c.services && c.services.length) ? c.services : def.services,
@@ -478,26 +505,22 @@ class Component extends DCLogic {
   }
 
   persist(dayKey, time, svc, nombre, tel, estado) {
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem("laestudio.taken") || "{}"); } catch (e) {}
-    saved[dayKey] = (saved[dayKey] || []).concat([time]);
-    try { localStorage.setItem("laestudio.taken", JSON.stringify(saved)); } catch (e) {}
-
-    const turno = {
-      id: "w" + Date.now(), dayKey: dayKey, time: time,
+    const data = {
+      dayKey: dayKey, time: time,
       cliente: nombre || "Sin nombre", tel: tel || "—",
-      svc: svc, estado: estado || "comprobante"
+      svc: svc, estado: estado || "comprobante", origen: "Web"
     };
-    const turnos = this.readLS("laestudio.turnos", []);
-    turnos.push(turno);
-    this.writeLS("laestudio.turnos", turnos);
-    this.writeLS("laestudio.miTurno", turno);
-
-    this.setState(s => {
-      const t = Object.assign({}, s.taken);
-      t[dayKey] = (t[dayKey] || []).concat([time]);
-      return { taken: t, miTurno: turno };
-    });
+    if (this.fbReady) {
+      this.db.collection("turnos").add(data).then(ref => {
+        const turno = Object.assign({ id: ref.id }, data);
+        this.writeLS("laestudio.miTurno", turno);
+        this.setState({ miTurno: turno });
+      }).catch(e => console.error("[firebase] persist", e));
+    } else {
+      const turno = Object.assign({ id: "w" + Date.now() }, data);
+      this.writeLS("laestudio.miTurno", turno);
+      this.setState(s => ({ turnos: s.turnos.concat([turno]), miTurno: turno }));
+    }
   }
 
   cancelarMiTurno() {
@@ -505,25 +528,19 @@ class Component extends DCLogic {
     if (!t) return;
     if (!window.confirm("¿Seguro que querés cancelar tu turno?")) return;
 
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem("laestudio.taken") || "{}"); } catch (e) {}
-    saved[t.dayKey] = (saved[t.dayKey] || []).filter(x => x !== t.time);
-    try { localStorage.setItem("laestudio.taken", JSON.stringify(saved)); } catch (e) {}
-
-    const turnos = this.readLS("laestudio.turnos", []).map(x => x.id === t.id ? Object.assign({}, x, { estado: "cancelado" }) : x);
-    this.writeLS("laestudio.turnos", turnos);
     this.writeLS("laestudio.miTurno", Object.assign({}, t, { estado: "cancelado" }));
+    if (this.fbReady && t.id) {
+      this.db.collection("turnos").doc(t.id).update({ estado: "cancelado" }).catch(e => console.error("[firebase] cancelarMiTurno", e));
+    } else {
+      this.setState(s => ({ turnos: s.turnos.map(x => x.id === t.id ? Object.assign({}, x, { estado: "cancelado" }) : x) }));
+    }
 
     const d = new Date(t.dayKey + "T00:00:00");
     const label = DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
     const msg = "Hola " + this.cfg().nombre + "! Cancelo mi turno del " + label + " a las " + t.time + " h.";
     window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
 
-    this.setState(s => {
-      const tk = Object.assign({}, s.taken);
-      tk[t.dayKey] = (tk[t.dayKey] || []).filter(x => x !== t.time);
-      return { taken: tk, miTurno: null };
-    });
+    this.setState({ miTurno: null });
   }
 
   renderVals() {
@@ -532,15 +549,16 @@ class Component extends DCLogic {
     const days = this.dayList();
     const day = days[s.day] || days[0];
     const svc = cfg.services.find(x => x.id === s.svc) || null;
-    const fijos = this.readLS("laestudio.fijos", []);
+    const fijos = s.fijos;
     const fijoTimes = day ? fijos.filter(f => f.dow === day.date.getDay()).map(f => f.time) : [];
-    const taken = (s.taken[day ? day.key : ""] || []).concat(fijoTimes);
+    const busyTimes = day ? s.turnos.filter(t => t.dayKey === day.key && t.estado !== "cancelado").map(t => t.time) : [];
+    const taken = busyTimes.concat(fijoTimes);
     const senia = svc ? Math.round(svc.price / 2) : 0;
     const dayLabel = day ? DOW[day.date.getDay()] + " " + day.date.getDate() + " de " + MONTH[day.date.getMonth()] : "";
     const turnoLabel = day && s.slot ? dayLabel + ", " + s.slot + " h" : "—";
     const ready1 = !!(svc && s.slot);
     const ready2 = !!(s.nombre.trim() && s.tel.trim());
-    const exentos = this.readLS("laestudio.exentos", []);
+    const exentos = s.exentos;
     const telDigits = s.tel.replace(/\D/g, "").slice(-10);
     const exento = telDigits.length >= 6 && exentos.some(x => (x.tel || "").replace(/\D/g, "").slice(-10) === telDigits);
     const msg = "Hola " + cfg.nombre + "! Soy " + (s.nombre || "—") + ". Reservé " + (svc ? svc.name : "—") +

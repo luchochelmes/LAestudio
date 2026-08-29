@@ -13,6 +13,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="./firebase-config.js"></script>
 <style>
   html, body { margin: 0; padding: 0; background: #2F2F2F; }
   * { box-sizing: border-box; }
@@ -76,7 +79,6 @@
             <span style="display: block; width: 6px; height: 6px; border-radius: 50%; background: #7E9A6F; animation: boPulse 1.8s ease-in-out infinite"></span>
             En vivo
           </span>
-          <span style="font-size: 12px; color: #6E675F">{{ lastSync }}</span>
           <div class="bo-header-actions" style="margin-left: auto; display: flex; align-items: center; gap: 10px">
             <button type="button" onClick="{{ openManual }}" style="padding: 12px 18px; border: 2px solid #363532; background: transparent; color: #C9A97E; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; white-space: nowrap" style-hover="border-color: #C9A97E">+ Turno manual</button>
             <button type="button" onClick="{{ openPw }}" style="padding: 12px 16px; border: 2px solid #4E4A46; background: transparent; color: #6E675F; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; white-space: nowrap" style-hover="color: #EDE9E1">Acceso</button>
@@ -579,7 +581,7 @@ const key = d => d.toISOString().slice(0, 10);
 
 class Component extends DCLogic {
   state = {
-    authed: false, user: "", pass: "", loginError: "",
+    authed: false, user: "", pass: "", loginError: "", authDoc: null,
     tab: "turnero", mode: "day", cursor: 0,
     turnos: [], bloqueos: {}, toast: "",
     manualOpen: false, mNombre: "", mTel: "", mSvc: "corte", mDay: "", mTime: "10:00", mConfirmado: true, manualError: "",
@@ -588,40 +590,89 @@ class Component extends DCLogic {
     config: null, cfgNewName: "", cfgNewDuration: 30, cfgNewPrice: "", cfgError: "",
     pendHorario: null, pendGenerales: null, pendServices: null,
     fijos: [], fNombre: "", fTel: "", fSvc: "", fDow: null, fTime: "", fError: "",
-    exentos: [], exNombre: "", exTel: "", exError: "",
-    lastSync: "recién"
+    exentos: [], exNombre: "", exTel: "", exError: ""
   };
 
-  componentDidMount() {
-    const config = this.readLS("laestudio.config", null);
-    const def = this.defaultConfig();
-    const c = config || {};
-    const cfgNow = {
-      services: (c.services && c.services.length) ? c.services : def.services,
-      hourStart: c.hourStart != null ? c.hourStart : def.hourStart,
-      hourEnd: c.hourEnd != null ? c.hourEnd : def.hourEnd,
-      days: (c.days && c.days.length) ? c.days : def.days,
-      breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
-      breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
-      breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd,
-      alias: c.alias ? c.alias : def.alias,
-      nombre: c.nombre ? c.nombre : def.nombre
-    };
-    this.setState({
-      turnos: this.fromWeb(), bloqueos: this.readLS("laestudio.bloqueos", {}),
-      config, fijos: this.readLS("laestudio.fijos", []), exentos: this.readLS("laestudio.exentos", []),
-      pendHorario: { hourStart: cfgNow.hourStart, hourEnd: cfgNow.hourEnd, days: cfgNow.days.slice(), breakEnabled: cfgNow.breakEnabled, breakStart: cfgNow.breakStart, breakEnd: cfgNow.breakEnd },
-      pendGenerales: { nombre: cfgNow.nombre, alias: cfgNow.alias },
-      pendServices: cfgNow.services.map(s => Object.assign({}, s))
-    });
-    this.poll = setInterval(() => this.sync(), 4000);
-    this.onStorage = () => this.sync();
-    window.addEventListener("storage", this.onStorage);
-  }
-  componentWillUnmount() { clearInterval(this.poll); window.removeEventListener("storage", this.onStorage); }
+  fbReady = false;
+  _pendInit = false;
+  _turnosLoaded = false;
 
-  readLS(k, fb) { try { return JSON.parse(localStorage.getItem(k) || "null") || fb; } catch (e) { return fb; } }
-  writeLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  componentDidMount() {
+    this.initFirebase();
+  }
+  componentWillUnmount() {
+    if (this._tt) clearTimeout(this._tt);
+  }
+
+  initFirebase() {
+    try {
+      const cfg = window.LBESTUDIO_FIREBASE_CONFIG;
+      if (!cfg || !cfg.enabled || typeof firebase === "undefined") return;
+      if (!firebase.apps.length) firebase.initializeApp(cfg);
+      this.db = firebase.firestore();
+      this.fbReady = true;
+
+      this.db.collection("turnos").onSnapshot(snap => {
+        const turnos = snap.docs.map(d => Object.assign({ id: d.id, origen: "Web" }, d.data()));
+        this.setState(s => {
+          if (this._turnosLoaded) {
+            const have = {};
+            s.turnos.forEach(t => { have[t.id] = true; });
+            const nuevos = turnos.filter(t => !have[t.id] && t.origen === "Web");
+            if (nuevos.length) {
+              clearTimeout(this._tt);
+              this._tt = setTimeout(() => this.setState({ toast: "" }), 6000);
+              return { turnos: turnos, toast: "Nueva reserva desde la web: " + nuevos[0].cliente + " · " + nuevos[0].time + " h" };
+            }
+          }
+          return { turnos: turnos };
+        });
+        this._turnosLoaded = true;
+      }, err => console.error("[firebase] turnos listener", err));
+
+      this.db.collection("bloqueos").doc("main").onSnapshot(doc => {
+        this.setState({ bloqueos: doc.exists ? doc.data() : {} });
+      }, err => console.error("[firebase] bloqueos listener", err));
+
+      this.db.collection("config").doc("main").onSnapshot(doc => {
+        const config = doc.exists ? doc.data() : null;
+        this.setState({ config: config });
+        if (!this._pendInit) {
+          this._pendInit = true;
+          const def = this.defaultConfig();
+          const c = config || {};
+          const cfgNow = {
+            services: (c.services && c.services.length) ? c.services : def.services,
+            hourStart: c.hourStart != null ? c.hourStart : def.hourStart,
+            hourEnd: c.hourEnd != null ? c.hourEnd : def.hourEnd,
+            days: (c.days && c.days.length) ? c.days : def.days,
+            breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
+            breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
+            breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd,
+            alias: c.alias ? c.alias : def.alias,
+            nombre: c.nombre ? c.nombre : def.nombre
+          };
+          this.setState({
+            pendHorario: { hourStart: cfgNow.hourStart, hourEnd: cfgNow.hourEnd, days: cfgNow.days.slice(), breakEnabled: cfgNow.breakEnabled, breakStart: cfgNow.breakStart, breakEnd: cfgNow.breakEnd },
+            pendGenerales: { nombre: cfgNow.nombre, alias: cfgNow.alias },
+            pendServices: cfgNow.services.map(sv => Object.assign({}, sv))
+          });
+        }
+      }, err => console.error("[firebase] config listener", err));
+
+      this.db.collection("configAuth").doc("main").onSnapshot(doc => {
+        this.setState({ authDoc: doc.exists ? doc.data() : null });
+      }, err => console.error("[firebase] configAuth listener", err));
+
+      this.db.collection("fijos").onSnapshot(snap => {
+        this.setState({ fijos: snap.docs.map(d => Object.assign({ id: d.id }, d.data())) });
+      }, err => console.error("[firebase] fijos listener", err));
+
+      this.db.collection("exentos").onSnapshot(snap => {
+        this.setState({ exentos: snap.docs.map(d => Object.assign({ id: d.id }, d.data())) });
+      }, err => console.error("[firebase] exentos listener", err));
+    } catch (e) { console.error("[firebase] init error", e); }
+  }
 
   defaultConfig() {
     return {
@@ -656,8 +707,8 @@ class Component extends DCLogic {
 
   saveCfg(patch) {
     const next = Object.assign({}, this.cfg(), patch);
-    this.writeLS("laestudio.config", next);
-    this.setState({ config: next });
+    if (this.fbReady) this.db.collection("config").doc("main").set(next).catch(e => console.error("[firebase] saveCfg", e));
+    else this.setState({ config: next });
   }
 
   times() {
@@ -751,11 +802,6 @@ class Component extends DCLogic {
     this.flash("Datos del negocio actualizados");
   }
 
-  writeFijos(fijos) {
-    this.writeLS("laestudio.fijos", fijos);
-    this.setState({ fijos: fijos });
-  }
-
   addFijo() {
     const s = this.state;
     const cfg = this.cfg();
@@ -765,21 +811,18 @@ class Component extends DCLogic {
     const fTime = s.fTime || this.times()[0] || "";
     const dup = s.fijos.some(f => f.dow === fDow && f.time === fTime);
     if (dup) { this.setState({ fError: "Ya hay un turno fijo en ese día y horario." }); return; }
-    const fijo = { id: "fj" + Date.now(), dow: fDow, time: fTime, cliente: s.fNombre.trim(), tel: s.fTel.trim() || "—", svc: fSvc };
-    this.writeFijos(s.fijos.concat([fijo]));
+    const fijo = { dow: fDow, time: fTime, cliente: s.fNombre.trim(), tel: s.fTel.trim() || "—", svc: fSvc };
+    if (this.fbReady) this.db.collection("fijos").add(fijo).catch(e => console.error("[firebase] addFijo", e));
+    else this.setState(st => ({ fijos: st.fijos.concat([Object.assign({ id: "fj" + Date.now() }, fijo)]) }));
     this.setState({ fNombre: "", fTel: "", fError: "" });
     this.flash("Turno fijo agregado · " + fijo.cliente);
   }
 
   quitarFijo(id) {
     if (!window.confirm("¿Quitar este turno fijo? Deja de repetirse todas las semanas.")) return;
-    this.writeFijos(this.state.fijos.filter(f => f.id !== id));
+    if (this.fbReady) this.db.collection("fijos").doc(id).delete().catch(e => console.error("[firebase] quitarFijo", e));
+    else this.setState(st => ({ fijos: st.fijos.filter(f => f.id !== id) }));
     this.flash("Turno fijo eliminado");
-  }
-
-  writeExentos(exentos) {
-    this.writeLS("laestudio.exentos", exentos);
-    this.setState({ exentos: exentos });
   }
 
   addExento() {
@@ -789,26 +832,21 @@ class Component extends DCLogic {
     if (!tel || tel.replace(/\D/g, "").length < 6) { this.setState({ exError: "Poné un WhatsApp válido." }); return; }
     const telDigits = tel.replace(/\D/g, "").slice(-10);
     if (s.exentos.some(x => x.tel.replace(/\D/g, "").slice(-10) === telDigits)) { this.setState({ exError: "Ese número ya está en la lista." }); return; }
-    const exento = { id: "ex" + Date.now(), nombre: s.exNombre.trim(), tel: tel };
-    this.writeExentos(s.exentos.concat([exento]));
+    const exento = { nombre: s.exNombre.trim(), tel: tel };
+    if (this.fbReady) this.db.collection("exentos").add(exento).catch(e => console.error("[firebase] addExento", e));
+    else this.setState(st => ({ exentos: st.exentos.concat([Object.assign({ id: "ex" + Date.now() }, exento)]) }));
     this.setState({ exNombre: "", exTel: "", exError: "" });
     this.flash("Cliente sin seña agregado · " + exento.nombre);
   }
 
   quitarExento(id) {
-    this.writeExentos(this.state.exentos.filter(x => x.id !== id));
+    if (this.fbReady) this.db.collection("exentos").doc(id).delete().catch(e => console.error("[firebase] quitarExento", e));
+    else this.setState(st => ({ exentos: st.exentos.filter(x => x.id !== id) }));
     this.flash("Cliente quitado de la lista");
   }
 
-  fromWeb() {
-    return this.readLS("laestudio.turnos", []).map(t => ({
-      id: t.id, dayKey: t.dayKey, time: t.time, cliente: t.cliente || "Sin nombre",
-      tel: t.tel || "—", svc: t.svc || "corte", estado: t.estado || "comprobante", origen: "Web"
-    }));
-  }
-
-  currentPass() { return this.readLS("laestudio.adminPass", null) || ADMIN_PASS; }
-  currentUser() { return this.readLS("laestudio.adminUser", null) || ADMIN_USER; }
+  currentPass() { return (this.state.authDoc && this.state.authDoc.pass) || ADMIN_PASS; }
+  currentUser() { return (this.state.authDoc && this.state.authDoc.user) || ADMIN_USER; }
 
   tryLogin() {
     const s = this.state;
@@ -818,11 +856,18 @@ class Component extends DCLogic {
     else this.setState({ authed: true, loginError: "" });
   }
 
+  saveAuth(patch) {
+    const next = { user: this.currentUser(), pass: this.currentPass() };
+    Object.assign(next, patch);
+    if (this.fbReady) this.db.collection("configAuth").doc("main").set(next).catch(e => console.error("[firebase] saveAuth", e));
+    else this.setState({ authDoc: next });
+  }
+
   tryChangeUser() {
     const s = this.state;
     if (!s.userNew.trim()) { this.setState({ userError: "Completá el nuevo usuario." }); return; }
     if (s.userNew.trim().length < 3) { this.setState({ userError: "El usuario debe tener al menos 3 caracteres." }); return; }
-    this.writeLS("laestudio.adminUser", s.userNew.trim());
+    this.saveAuth({ user: s.userNew.trim() });
     this.setState({ userNew: "", userError: "" });
     this.flash("Usuario actualizado");
   }
@@ -833,26 +878,9 @@ class Component extends DCLogic {
     if (s.pwCurrent !== this.currentPass()) { this.setState({ pwError: "La contraseña actual no es correcta." }); return; }
     if (s.pwNew.length < 4) { this.setState({ pwError: "La nueva contraseña debe tener al menos 4 caracteres." }); return; }
     if (s.pwNew !== s.pwNew2) { this.setState({ pwError: "La nueva contraseña no coincide en ambos campos." }); return; }
-    this.writeLS("laestudio.adminPass", s.pwNew);
+    this.saveAuth({ pass: s.pwNew });
     this.setState({ pwOpen: false, pwCurrent: "", pwNew: "", pwNew2: "", pwError: "" });
     this.flash("Contraseña actualizada");
-  }
-
-  sync() {
-    const web = this.fromWeb();
-    this.setState(s => {
-      const have = {};
-      s.turnos.forEach(t => { have[t.id] = true; });
-      const nuevos = web.filter(t => !have[t.id]);
-      const st = { lastSync: "actualizado " + new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }), bloqueos: this.readLS("laestudio.bloqueos", s.bloqueos) };
-      if (nuevos.length) {
-        st.turnos = s.turnos.concat(nuevos);
-        st.toast = "Nueva reserva desde la web: " + nuevos[0].cliente + " · " + nuevos[0].time + " h";
-        clearTimeout(this._tt);
-        this._tt = setTimeout(() => this.setState({ toast: "" }), 6000);
-      }
-      return st;
-    });
   }
 
   flash(msg) {
@@ -861,19 +889,14 @@ class Component extends DCLogic {
     this._tt = setTimeout(() => this.setState({ toast: "" }), 5000);
   }
 
-  freeSlot(dayKey, time) {
-    const taken = this.readLS("laestudio.taken", {});
-    taken[dayKey] = (taken[dayKey] || []).filter(t => t !== time);
-    this.writeLS("laestudio.taken", taken);
-  }
-  holdSlot(dayKey, time) {
-    const taken = this.readLS("laestudio.taken", {});
-    taken[dayKey] = (taken[dayKey] || []).concat([time]);
-    this.writeLS("laestudio.taken", taken);
+  setEstado(id, estado) {
+    if (this.fbReady) this.db.collection("turnos").doc(id).update({ estado: estado }).catch(e => console.error("[firebase] setEstado", e));
+    else this.setState(s => ({ turnos: s.turnos.map(t => t.id === id ? Object.assign({}, t, { estado: estado }) : t) }));
   }
 
-  setEstado(id, estado) {
-    this.setState(s => ({ turnos: s.turnos.map(t => t.id === id ? Object.assign({}, t, { estado: estado }) : t) }));
+  saveBloqueos(b) {
+    if (this.fbReady) this.db.collection("bloqueos").doc("main").set(b).catch(e => console.error("[firebase] saveBloqueos", e));
+    else this.setState({ bloqueos: b });
   }
 
   confirmar(t) {
@@ -885,13 +908,11 @@ class Component extends DCLogic {
     const to = tel.length >= 10 ? "549" + tel.slice(-10) : WA_LOCAL;
     window.open("https://wa.me/" + to + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
     this.setEstado(t.id, "confirmado");
-    this.holdSlot(t.dayKey, t.time);
     this.flash("Turno confirmado · WhatsApp enviado a " + t.cliente);
   }
 
   rechazar(t) {
     this.setEstado(t.id, "cancelado");
-    this.freeSlot(t.dayKey, t.time);
     this.flash("Turno rechazado · " + t.time + " h liberado en la web");
   }
 
@@ -905,34 +926,28 @@ class Component extends DCLogic {
     const to = tel.length >= 10 ? "549" + tel.slice(-10) : WA_LOCAL;
     window.open("https://wa.me/" + to + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
     this.setEstado(t.id, "cancelado");
-    this.freeSlot(t.dayKey, t.time);
     this.flash("Turno cancelado · WhatsApp enviado a " + t.cliente);
   }
 
   toggleBloqueo(dayKey, time) {
-    this.setState(s => {
-      const b = Object.assign({}, s.bloqueos);
-      const arr = (b[dayKey] || []).slice();
-      const i = arr.indexOf(time);
-      if (i > -1) { arr.splice(i, 1); this.freeSlot(dayKey, time); }
-      else { arr.push(time); this.holdSlot(dayKey, time); }
-      b[dayKey] = arr;
-      this.writeLS("laestudio.bloqueos", b);
-      return { bloqueos: b };
-    });
+    const b = Object.assign({}, this.state.bloqueos);
+    const arr = (b[dayKey] || []).slice();
+    const i = arr.indexOf(time);
+    if (i > -1) arr.splice(i, 1);
+    else arr.push(time);
+    b[dayKey] = arr;
+    this.saveBloqueos(b);
   }
 
   toggleDia(dayKey, allBlocked) {
-    this.setState(s => {
-      const b = Object.assign({}, s.bloqueos);
-      const busy = {};
-      s.turnos.forEach(t => { if (t.dayKey === dayKey && t.estado !== "cancelado") busy[t.time] = true; });
-      const libres = this.times().filter(t => !busy[t]);
-      if (allBlocked) { b[dayKey] = []; libres.forEach(t => this.freeSlot(dayKey, t)); }
-      else { b[dayKey] = libres; libres.forEach(t => this.holdSlot(dayKey, t)); }
-      this.writeLS("laestudio.bloqueos", b);
-      return { bloqueos: b };
-    });
+    const s = this.state;
+    const b = Object.assign({}, s.bloqueos);
+    const busy = {};
+    s.turnos.forEach(t => { if (t.dayKey === dayKey && t.estado !== "cancelado") busy[t.time] = true; });
+    const libres = this.times().filter(t => !busy[t]);
+    if (allBlocked) b[dayKey] = [];
+    else b[dayKey] = libres;
+    this.saveBloqueos(b);
     this.flash(allBlocked ? "Día liberado" : "Día bloqueado en la web pública");
   }
 
@@ -1076,7 +1091,6 @@ class Component extends DCLogic {
       onLoginKey: e => { if (e.key === "Enter") this.tryLogin(); },
       login: () => this.tryLogin(),
       logout: () => this.setState({ authed: false, pass: "" }),
-      lastSync: s.lastSync,
       tabs: tabs, kpis: kpis,
       isTurnero: s.tab === "turnero", isPendientes: s.tab === "pendientes",
       isDisponibilidad: s.tab === "disponibilidad",
@@ -1121,11 +1135,12 @@ class Component extends DCLogic {
       saveManual: () => {
         if (!s.mNombre.trim()) { this.setState({ manualError: "Falta el nombre del cliente." }); return; }
         if (at(mDayKey, s.mTime)) { this.setState({ manualError: "Ese horario ya está ocupado." }); return; }
-        const t = { id: "m" + Date.now(), dayKey: mDayKey, time: s.mTime, cliente: s.mNombre.trim(),
+        const data = { dayKey: mDayKey, time: s.mTime, cliente: s.mNombre.trim(),
           tel: s.mTel.trim() || "—", svc: s.mSvc, estado: s.mConfirmado ? "confirmado" : "pendiente", origen: "Manual" };
-        this.setState(st => ({ turnos: st.turnos.concat([t]), manualOpen: false, mNombre: "", mTel: "", manualError: "" }));
-        this.holdSlot(mDayKey, s.mTime);
-        this.flash("Turno manual cargado · " + t.cliente + " " + t.time + " h");
+        if (this.fbReady) this.db.collection("turnos").add(data).catch(e => console.error("[firebase] saveManual", e));
+        else this.setState(st => ({ turnos: st.turnos.concat([Object.assign({ id: "m" + Date.now() }, data)]) }));
+        this.setState({ manualOpen: false, mNombre: "", mTel: "", manualError: "" });
+        this.flash("Turno manual cargado · " + data.cliente + " " + data.time + " h");
       },
       hasToast: !!s.toast, toast: s.toast,
       pwOpen: s.pwOpen,
