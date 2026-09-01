@@ -339,30 +339,36 @@
                 </sc-for>
               </div>
 
-              <label style="display: flex; align-items: center; gap: 12px; padding: 15px 16px; border: 2px solid #4E4A46; background: #141414; font-size: 13.5px; color: #B7B0A6; cursor: pointer; margin-bottom: 14px">
-                <input type="checkbox" checked="{{ cfgBreakEnabled }}" onChange="{{ toggleBreak }}" style="width: 17px; height: 17px; accent-color: #C9A97E">
-                Cortar el horario al mediodía (ej: parar de atender entre 13 y 15 h)
-              </label>
-              <sc-if value="{{ cfgBreakEnabled }}" hint-placeholder-val="{{ false }}">
-                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px">
-                  <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
-                    Corte desde
-                    <select value="{{ cfgBreakStart }}" onChange="{{ setCfgBreakStart }}" style="padding: 12px 14px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 14px">
-                      <sc-for list="{{ cfgHourOptions }}" as="h" hint-placeholder-count="15">
-                        <option value="{{ h.value }}">{{ h.label }}</option>
-                      </sc-for>
-                    </select>
-                  </label>
-                  <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
-                    Corte hasta
-                    <select value="{{ cfgBreakEnd }}" onChange="{{ setCfgBreakEnd }}" style="padding: 12px 14px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 14px">
-                      <sc-for list="{{ cfgHourOptions }}" as="h" hint-placeholder-count="15">
-                        <option value="{{ h.value }}">{{ h.label }}</option>
-                      </sc-for>
-                    </select>
-                  </label>
-                </div>
-              </sc-if>
+              <p style="margin: 0 0 10px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">Corte de mediodía por día</p>
+              <p style="margin: 0 0 14px; font-size: 12.5px; color: #8E8880">Activá el corte solo en los días que lo necesitás — no hace falta que sea igual todos los días.</p>
+              <div style="display: grid; gap: 10px; margin-bottom: 14px">
+                <sc-for list="{{ cfgBreakRows }}" as="br" hint-placeholder-count="5">
+                  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 13px 16px; border: 2px solid #4E4A46; background: #141414">
+                    <label style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #B7B0A6; cursor: pointer; text-transform: capitalize; min-width: 70px">
+                      <input type="checkbox" checked="{{ br.enabled }}" onChange="{{ br.toggle }}" style="width: 17px; height: 17px; accent-color: #C9A97E">
+                      {{ br.label }}
+                    </label>
+                    <sc-if value="{{ br.enabled }}" hint-placeholder-val="{{ false }}">
+                      <label style="display: flex; flex-direction: column; gap: 5px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">
+                        Desde
+                        <select value="{{ br.start }}" onChange="{{ br.setStart }}" style="padding: 10px 12px; background: #0B0B0A; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 13px">
+                          <sc-for list="{{ cfgHourOptions }}" as="h" hint-placeholder-count="15">
+                            <option value="{{ h.value }}">{{ h.label }}</option>
+                          </sc-for>
+                        </select>
+                      </label>
+                      <label style="display: flex; flex-direction: column; gap: 5px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">
+                        Hasta
+                        <select value="{{ br.end }}" onChange="{{ br.setEnd }}" style="padding: 10px 12px; background: #0B0B0A; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 13px">
+                          <sc-for list="{{ cfgHourOptions }}" as="h" hint-placeholder-count="15">
+                            <option value="{{ h.value }}">{{ h.label }}</option>
+                          </sc-for>
+                        </select>
+                      </label>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
               <button type="button" onClick="{{ confirmHorario }}" style="margin-top: 22px; padding: 13px 22px; border: 0; background: #C9A97E; color: #141414; border-radius: 2px; font-size: 11.5px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Confirmar cambios</button>
             </div>
 
@@ -641,19 +647,26 @@ class Component extends DCLogic {
           this._pendInit = true;
           const def = this.defaultConfig();
           const c = config || {};
+          let breaks = c.breaks;
+          if (!breaks) {
+            breaks = {};
+            if (c.breakEnabled) {
+              (c.days && c.days.length ? c.days : def.days).forEach(dow => {
+                breaks[dow] = { enabled: true, start: c.breakStart != null ? c.breakStart : 13, end: c.breakEnd != null ? c.breakEnd : 15 };
+              });
+            }
+          }
           const cfgNow = {
             services: (c.services && c.services.length) ? c.services : def.services,
             hourStart: c.hourStart != null ? c.hourStart : def.hourStart,
             hourEnd: c.hourEnd != null ? c.hourEnd : def.hourEnd,
             days: (c.days && c.days.length) ? c.days : def.days,
-            breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
-            breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
-            breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd,
+            breaks: breaks,
             alias: c.alias ? c.alias : def.alias,
             nombre: c.nombre ? c.nombre : def.nombre
           };
           this.setState({
-            pendHorario: { hourStart: cfgNow.hourStart, hourEnd: cfgNow.hourEnd, days: cfgNow.days.slice(), breakEnabled: cfgNow.breakEnabled, breakStart: cfgNow.breakStart, breakEnd: cfgNow.breakEnd },
+            pendHorario: { hourStart: cfgNow.hourStart, hourEnd: cfgNow.hourEnd, days: cfgNow.days.slice(), breaks: Object.assign({}, cfgNow.breaks) },
             pendGenerales: { nombre: cfgNow.nombre, alias: cfgNow.alias },
             pendServices: cfgNow.services.map(sv => Object.assign({}, sv))
           });
@@ -683,7 +696,7 @@ class Component extends DCLogic {
       ],
       hourStart: 10, hourEnd: 20,
       days: [2, 3, 4, 5, 6],
-      breakEnabled: false, breakStart: 13, breakEnd: 15,
+      breaks: {},
       alias: "laestudio.corte",
       nombre: "LBestudio"
     };
@@ -692,14 +705,21 @@ class Component extends DCLogic {
   cfg() {
     const c = this.state.config || {};
     const def = this.defaultConfig();
+    let breaks = c.breaks;
+    if (!breaks) {
+      breaks = {};
+      if (c.breakEnabled) {
+        (c.days && c.days.length ? c.days : def.days).forEach(dow => {
+          breaks[dow] = { enabled: true, start: c.breakStart != null ? c.breakStart : 13, end: c.breakEnd != null ? c.breakEnd : 15 };
+        });
+      }
+    }
     return {
       services: (c.services && c.services.length) ? c.services : def.services,
       hourStart: c.hourStart != null ? c.hourStart : def.hourStart,
       hourEnd: c.hourEnd != null ? c.hourEnd : def.hourEnd,
       days: (c.days && c.days.length) ? c.days : def.days,
-      breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
-      breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
-      breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd,
+      breaks: breaks,
       alias: c.alias ? c.alias : def.alias,
       nombre: c.nombre ? c.nombre : def.nombre
     };
@@ -711,11 +731,19 @@ class Component extends DCLogic {
     else this.setState({ config: next });
   }
 
-  times() {
-    const { hourStart, hourEnd, breakEnabled, breakStart, breakEnd } = this.cfg();
+  allTimes() {
+    const { hourStart, hourEnd } = this.cfg();
     const out = [];
-    for (let h = hourStart; h < hourEnd; h++) {
-      if (breakEnabled && h >= breakStart && h < breakEnd) continue;
+    for (let h = hourStart; h < hourEnd; h++) { out.push(h + ":00"); out.push(h + ":30"); }
+    return out;
+  }
+
+  times(dow) {
+    const cfg = this.cfg();
+    const b = dow != null ? cfg.breaks[dow] : null;
+    const out = [];
+    for (let h = cfg.hourStart; h < cfg.hourEnd; h++) {
+      if (b && b.enabled && h >= b.start && h < b.end) continue;
       out.push(h + ":00"); out.push(h + ":30");
     }
     return out;
@@ -730,6 +758,18 @@ class Component extends DCLogic {
       if (days.indexOf(d.getDay()) > -1) out.push(new Date(d));
     }
     return dir < 0 ? out.reverse() : out;
+  }
+
+  bizDaysWindow(calendarDays) {
+    const days = this.cfg().days;
+    const out = [];
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    for (let i = 0; i < calendarDays; i++) {
+      d.setDate(d.getDate() + 1);
+      if (days.indexOf(d.getDay()) > -1) out.push(new Date(d));
+    }
+    return out;
   }
 
   svcMap() {
@@ -784,8 +824,22 @@ class Component extends DCLogic {
     });
   }
 
-  togglePendBreak() {
-    this.setState(st => ({ pendHorario: Object.assign({}, st.pendHorario, { breakEnabled: !st.pendHorario.breakEnabled }) }));
+  togglePendBreakDay(dow) {
+    this.setState(st => {
+      const breaks = Object.assign({}, st.pendHorario.breaks);
+      const cur = breaks[dow] || { enabled: false, start: 13, end: 15 };
+      breaks[dow] = Object.assign({}, cur, { enabled: !cur.enabled });
+      return { pendHorario: Object.assign({}, st.pendHorario, { breaks: breaks }) };
+    });
+  }
+
+  setPendBreakField(dow, field, value) {
+    this.setState(st => {
+      const breaks = Object.assign({}, st.pendHorario.breaks);
+      const cur = breaks[dow] || { enabled: true, start: 13, end: 15 };
+      breaks[dow] = Object.assign({}, cur, { [field]: value });
+      return { pendHorario: Object.assign({}, st.pendHorario, { breaks: breaks }) };
+    });
   }
 
   confirmHorario() {
@@ -808,7 +862,7 @@ class Component extends DCLogic {
     if (!s.fNombre.trim()) { this.setState({ fError: "Falta el nombre del cliente." }); return; }
     const fDow = s.fDow != null ? s.fDow : cfg.days[0];
     const fSvc = s.fSvc || cfg.services[0].id;
-    const fTime = s.fTime || this.times()[0] || "";
+    const fTime = s.fTime || this.times(fDow)[0] || "";
     const dup = s.fijos.some(f => f.dow === fDow && f.time === fTime);
     if (dup) { this.setState({ fError: "Ya hay un turno fijo en ese día y horario." }); return; }
     const fijo = { dow: fDow, time: fTime, cliente: s.fNombre.trim(), tel: s.fTel.trim() || "—", svc: fSvc };
@@ -941,10 +995,11 @@ class Component extends DCLogic {
 
   toggleDia(dayKey, allBlocked) {
     const s = this.state;
+    const dow = new Date(dayKey + "T00:00:00").getDay();
     const b = Object.assign({}, s.bloqueos);
     const busy = {};
     s.turnos.forEach(t => { if (t.dayKey === dayKey && t.estado !== "cancelado") busy[t.time] = true; });
-    const libres = this.times().filter(t => !busy[t]);
+    const libres = this.times(dow).filter(t => !busy[t]);
     if (allBlocked) b[dayKey] = [];
     else b[dayKey] = libres;
     this.saveBloqueos(b);
@@ -955,10 +1010,10 @@ class Component extends DCLogic {
     const s = this.state;
     const SVC = this.svcMap();
     const cfg = this.cfg();
-    const pendH = s.pendHorario || { hourStart: cfg.hourStart, hourEnd: cfg.hourEnd, days: cfg.days, breakEnabled: cfg.breakEnabled, breakStart: cfg.breakStart, breakEnd: cfg.breakEnd };
+    const pendH = s.pendHorario || { hourStart: cfg.hourStart, hourEnd: cfg.hourEnd, days: cfg.days, breaks: cfg.breaks };
     const pendG = s.pendGenerales || { nombre: cfg.nombre, alias: cfg.alias };
     if (!s.pendServices) s.pendServices = cfg.services.map(sv => Object.assign({}, sv));
-    const future = this.bizDays(new Date(), 6, 1);
+    const future = this.bizDaysWindow(14);
     const cursor = future[Math.min(s.cursor, future.length - 1)] || future[0];
     const cursorKey = key(cursor);
     const bl = k => s.bloqueos[k] || [];
@@ -997,7 +1052,7 @@ class Component extends DCLogic {
       go: () => this.setState({ tab: t.id })
     }));
 
-    const dayRows = this.times().map(t => {
+    const dayRows = this.times(cursor.getDay()).map(t => {
       const turno = at(cursorKey, t);
       const esFijo = !!(turno && turno.origen === "Fijo");
       const blocked = bl(cursorKey).indexOf(t) > -1;
@@ -1024,18 +1079,22 @@ class Component extends DCLogic {
     const weekDays = week.map((d, i) => {
       const k = key(d);
       return { dow: DOW[d.getDay()], dayNum: d.getDate(), fg: k === cursorKey ? "#C9A97E" : "#EDE9E1",
-        libres: this.times().length - byDay(k).length - bl(k).length };
+        libres: this.times(d.getDay()).length - byDay(k).length - bl(k).length };
     });
-    const weekRows = this.times().map(t => ({
+    const weekAxis = this.allTimes();
+    const weekRows = weekAxis.map(t => ({
       time: t,
       cells: week.map(d => {
         const k = key(d), turno = at(k, t), blocked = bl(k).indexOf(t) > -1;
         const est = turno ? EST[turno.estado] : null;
+        const brk = cfg.breaks[d.getDay()];
+        const hh = parseInt(t.split(":")[0], 10);
+        const onBreak = !turno && !blocked && brk && brk.enabled && hh >= brk.start && hh < brk.end;
         return {
-          bg: turno ? "#1A1A1A" : blocked ? "#0F0F0F" : "transparent",
-          dot: turno ? est.color : blocked ? "#262625" : "#1B1815",
-          fg: turno ? "#B7B0A6" : "#363532",
-          label: turno ? turno.cliente.split(" ")[0] + " · " + svcOf(turno.svc).name : blocked ? "bloqueado" : "libre"
+          bg: turno ? "#1A1A1A" : blocked ? "#0F0F0F" : onBreak ? "#0C0C0C" : "transparent",
+          dot: turno ? est.color : blocked ? "#262625" : onBreak ? "#1B1815" : "#1B1815",
+          fg: turno ? "#B7B0A6" : onBreak ? "#4E4740" : "#363532",
+          label: turno ? turno.cliente.split(" ")[0] + " · " + svcOf(turno.svc).name : blocked ? "bloqueado" : onBreak ? "corte" : "libre"
         };
       })
     }));
@@ -1055,13 +1114,13 @@ class Component extends DCLogic {
       const k = key(d), busy = {};
       byDay(k).forEach(t => { busy[t.time] = true; });
       const blocked = bl(k);
-      const libres = this.times().filter(t => !busy[t] && blocked.indexOf(t) < 0);
+      const libres = this.times(d.getDay()).filter(t => !busy[t] && blocked.indexOf(t) < 0);
       const allBlocked = libres.length === 0 && blocked.length > 0;
       return {
         label: dayLabel(d), libres: libres.length, ocupados: Object.keys(busy).length, bloqueados: blocked.length,
         allLabel: allBlocked ? "Liberar día" : "Bloquear día",
         toggleAll: () => this.toggleDia(k, allBlocked),
-        slots: this.times().map(t => {
+        slots: this.times(d.getDay()).map(t => {
           const isBusy = !!busy[t], isBlocked = blocked.indexOf(t) > -1;
           return {
             time: t, busy: isBusy,
@@ -1080,8 +1139,10 @@ class Component extends DCLogic {
     const mDayKey = s.mDay || (manualDays[0] && manualDays[0].key) || "";
     const busyManual = {};
     byDay(mDayKey).forEach(t => { busyManual[t.time] = true; });
-    const manualTimes = this.times().filter(t => !busyManual[t]).map(t => ({ value: t, label: t + " h" }));
+    const mDow = mDayKey ? new Date(mDayKey + "T00:00:00").getDay() : null;
+    const manualTimes = this.times(mDow).filter(t => !busyManual[t]).map(t => ({ value: t, label: t + " h" }));
     const manualSvcOptions = cfg.services.map(sv => ({ id: sv.id, label: sv.name + " · " + sv.duration + " min · " + money(sv.price) }));
+    const fDowVal = s.fDow != null ? s.fDow : cfg.days[0];
 
     return {
       locked: !s.authed, authed: s.authed,
@@ -1096,7 +1157,7 @@ class Component extends DCLogic {
       isDisponibilidad: s.tab === "disponibilidad",
       cursorLabel: dayLabel(cursor),
       prevDay: () => this.setState(st => ({ cursor: Math.max(0, st.cursor - 1) })),
-      nextDay: () => this.setState(st => ({ cursor: Math.min(5, st.cursor + 1) })),
+      nextDay: () => this.setState(st => ({ cursor: Math.min(future.length - 1, st.cursor + 1) })),
       isDayMode: s.mode === "day", isWeekMode: s.mode === "week",
       setDayMode: () => this.setState({ mode: "day" }),
       setWeekMode: () => this.setState({ mode: "week" }),
@@ -1160,12 +1221,16 @@ class Component extends DCLogic {
       cfgHourOptions: Array.from({ length: 15 }, (_, i) => i + 7).map(h => ({ value: h, label: h + ":00" })),
       setCfgHourStart: e => this.setPendHorario("hourStart", parseInt(e.target.value, 10)),
       setCfgHourEnd: e => this.setPendHorario("hourEnd", parseInt(e.target.value, 10)),
-      cfgBreakEnabled: pendH.breakEnabled,
-      toggleBreak: () => this.togglePendBreak(),
-      cfgBreakStart: pendH.breakStart, cfgBreakEnd: pendH.breakEnd,
-      setCfgBreakStart: e => this.setPendHorario("breakStart", parseInt(e.target.value, 10)),
-      setCfgBreakEnd: e => this.setPendHorario("breakEnd", parseInt(e.target.value, 10)),
-      horarioDirty: JSON.stringify(pendH) !== JSON.stringify({ hourStart: cfg.hourStart, hourEnd: cfg.hourEnd, days: cfg.days, breakEnabled: cfg.breakEnabled, breakStart: cfg.breakStart, breakEnd: cfg.breakEnd }),
+      cfgBreakRows: pendH.days.slice().sort((a, b) => a - b).map(dow => {
+        const br = pendH.breaks[dow] || { enabled: false, start: 13, end: 15 };
+        return {
+          dow: dow, label: DOW[dow], enabled: br.enabled, start: br.start, end: br.end,
+          toggle: () => this.togglePendBreakDay(dow),
+          setStart: e => this.setPendBreakField(dow, "start", parseInt(e.target.value, 10)),
+          setEnd: e => this.setPendBreakField(dow, "end", parseInt(e.target.value, 10))
+        };
+      }),
+      horarioDirty: JSON.stringify(pendH) !== JSON.stringify({ hourStart: cfg.hourStart, hourEnd: cfg.hourEnd, days: cfg.days, breaks: cfg.breaks }),
       confirmHorario: () => this.confirmHorario(),
       cfgAlias: pendG.alias,
       setCfgAlias: e => this.setPendGeneral("alias", e.target.value),
@@ -1210,12 +1275,12 @@ class Component extends DCLogic {
       fSvc: s.fSvc || cfg.services[0].id,
       setFSvc: e => this.setState({ fSvc: e.target.value }),
       fSvcOptions: manualSvcOptions,
-      fDow: s.fDow != null ? s.fDow : cfg.days[0],
-      setFDow: e => this.setState({ fDow: parseInt(e.target.value, 10) }),
+      fDow: fDowVal,
+      setFDow: e => this.setState({ fDow: parseInt(e.target.value, 10), fTime: "" }),
       fDowOptions: cfg.days.map(dow => ({ value: dow, label: DOW[dow] })),
-      fTime: s.fTime || this.times()[0] || "",
+      fTime: s.fTime || this.times(fDowVal)[0] || "",
       setFTime: e => this.setState({ fTime: e.target.value }),
-      fTimeOptions: this.times().map(t => ({ value: t, label: t + " h" })),
+      fTimeOptions: this.times(fDowVal).map(t => ({ value: t, label: t + " h" })),
       fError: s.fError,
       addFijo: () => this.addFijo(),
       exentosList: s.exentos.map(x => ({

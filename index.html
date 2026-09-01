@@ -460,30 +460,38 @@ class Component extends DCLogic {
   }
 
   defaultConfig() {
-    return { services: SERVICES, hourStart: 10, hourEnd: 20, days: [2, 3, 4, 5, 6], breakEnabled: false, breakStart: 13, breakEnd: 15, alias: ALIAS, nombre: "LBestudio" };
+    return { services: SERVICES, hourStart: 10, hourEnd: 20, days: [2, 3, 4, 5, 6], breaks: {}, alias: ALIAS, nombre: "LBestudio" };
   }
 
   cfg() {
     const c = this.state.config || {};
     const def = this.defaultConfig();
+    let breaks = c.breaks;
+    if (!breaks) {
+      breaks = {};
+      if (c.breakEnabled) {
+        (c.days && c.days.length ? c.days : def.days).forEach(dow => {
+          breaks[dow] = { enabled: true, start: c.breakStart != null ? c.breakStart : 13, end: c.breakEnd != null ? c.breakEnd : 15 };
+        });
+      }
+    }
     return {
       services: (c.services && c.services.length) ? c.services : def.services,
       hourStart: c.hourStart != null ? c.hourStart : def.hourStart,
       hourEnd: c.hourEnd != null ? c.hourEnd : def.hourEnd,
       days: (c.days && c.days.length) ? c.days : def.days,
-      breakEnabled: c.breakEnabled != null ? c.breakEnabled : def.breakEnabled,
-      breakStart: c.breakStart != null ? c.breakStart : def.breakStart,
-      breakEnd: c.breakEnd != null ? c.breakEnd : def.breakEnd,
+      breaks: breaks,
       alias: c.alias ? c.alias : def.alias,
       nombre: c.nombre ? c.nombre : def.nombre
     };
   }
 
-  timeList() {
-    const { hourStart, hourEnd, breakEnabled, breakStart, breakEnd } = this.cfg();
+  timeList(dow) {
+    const cfg = this.cfg();
+    const b = dow != null ? cfg.breaks[dow] : null;
     const out = [];
-    for (let h = hourStart; h < hourEnd; h++) {
-      if (breakEnabled && h >= breakStart && h < breakEnd) continue;
+    for (let h = cfg.hourStart; h < cfg.hourEnd; h++) {
+      if (b && b.enabled && h >= b.start && h < b.end) continue;
       out.push(h + ":00"); out.push(h + ":30");
     }
     return out;
@@ -494,7 +502,7 @@ class Component extends DCLogic {
     const out = [];
     const d = new Date();
     d.setHours(0, 0, 0, 0);
-    while (out.length < 6) {
+    for (let i = 0; i < 14; i++) {
       d.setDate(d.getDate() + 1);
       if (days.indexOf(d.getDay()) > -1) {
         const date = new Date(d);
@@ -504,12 +512,22 @@ class Component extends DCLogic {
     return out;
   }
 
+  notifyBarberConfirmado(data) {
+    const svc = this.cfg().services.find(x => x.id === data.svc);
+    const d = new Date(data.dayKey + "T00:00:00");
+    const label = DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
+    const msg = "Turno confirmado: " + data.cliente + " (" + data.tel + "), " + (svc ? svc.name : data.svc) +
+      ", " + label + " a las " + data.time + " h.";
+    window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+  }
+
   persist(dayKey, time, svc, nombre, tel, estado) {
     const data = {
       dayKey: dayKey, time: time,
       cliente: nombre || "Sin nombre", tel: tel || "—",
       svc: svc, estado: estado || "comprobante", origen: "Web"
     };
+    if (data.estado === "confirmado") this.notifyBarberConfirmado(data);
     if (this.fbReady) {
       this.db.collection("turnos").add(data).then(ref => {
         const turno = Object.assign({ id: ref.id }, data);
@@ -621,7 +639,7 @@ class Component extends DCLogic {
         fg: s.day === i ? "#EDE9E1" : "#B7B0A6",
         select: () => this.setState({ day: i, slot: null })
       })),
-      slots: this.timeList().map(t => {
+      slots: this.timeList(day ? day.date.getDay() : null).map(t => {
         const isTaken = taken.indexOf(t) > -1, sel = s.slot === t;
         return {
           label: t, taken: isTaken,
