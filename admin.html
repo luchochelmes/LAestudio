@@ -754,8 +754,8 @@ class Component extends DCLogic {
     const out = [], d = new Date(from);
     d.setHours(0, 0, 0, 0);
     while (out.length < count) {
-      d.setDate(d.getDate() + dir);
       if (days.indexOf(d.getDay()) > -1) out.push(new Date(d));
+      d.setDate(d.getDate() + dir);
     }
     return dir < 0 ? out.reverse() : out;
   }
@@ -766,8 +766,8 @@ class Component extends DCLogic {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     for (let i = 0; i < calendarDays; i++) {
-      d.setDate(d.getDate() + 1);
       if (days.indexOf(d.getDay()) > -1) out.push(new Date(d));
+      d.setDate(d.getDate() + 1);
     }
     return out;
   }
