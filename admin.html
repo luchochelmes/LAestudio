@@ -40,35 +40,7 @@
 
 <div style="background: #2F2F2F; color: #EDE9E1; font-family: 'Archivo', system-ui, sans-serif; font-weight: 300; -webkit-font-smoothing: antialiased; min-height: 100vh; overflow-x: hidden; max-width: 100vw">
 
-  <sc-if value="{{ locked }}" hint-placeholder-val="{{ true }}">
-    <div style="min-height: 100vh; display: grid; place-items: center; padding: 40px 20px">
-      <div style="width: 100%; max-width: 380px; animation: boFade .4s ease both">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 46px">
-          <span style="display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid #363532; border-radius: 3px; overflow: hidden; background: #2F2F2F"><img src="./logo.jpeg" alt="LBestudio" style="width: 100%; height: 100%; object-fit: cover"></span>
-          <span style="display: flex; flex-direction: column; line-height: 1.05">
-            <span style="font-family: 'Archivo Black', sans-serif; font-size: 20px">{{ nombreNegocio }}</span>
-            <span style="font-size: 9.5px; letter-spacing: .28em; text-transform: uppercase; color: #8E8880; margin-top: 3px; white-space: nowrap">Panel interno</span>
-          </span>
-        </div>
-        <h1 style="margin: 0 0 10px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 36px; line-height: 1.05">Ingresar</h1>
-        <p style="margin: 0 0 32px; font-size: 14px; color: #8E8880">Acceso exclusivo del peluquero.</p>
-        <div style="display: grid; gap: 14px">
-          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
-            Usuario
-            <input type="text" value="{{ user }}" onChange="{{ setUser }}" placeholder="laestudio" style="padding: 15px 16px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
-          </label>
-          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
-            Contraseña
-            <input type="password" value="{{ pass }}" onChange="{{ setPass }}" onKeyDown="{{ onLoginKey }}" placeholder="••••••••" style="padding: 15px 16px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
-          </label>
-          <button type="button" onClick="{{ login }}" style="margin-top: 8px; padding: 17px; border: 0; background: #C9A97E; color: #141414; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Entrar</button>
-          <p style="margin: 6px 0 0; min-height: 18px; font-size: 12.5px; color: #C9A97E">{{ loginError }}</p>
-        </div>
-      </div>
-    </div>
-  </sc-if>
-
-  <sc-if value="{{ authed }}" hint-placeholder-val="{{ false }}">
+  <div>
     <div style="min-height: 100vh; display: flex; flex-direction: column">
 
       <header style="position: sticky; top: 0; z-index: 30; background: rgba(47,47,47,.94); backdrop-filter: blur(12px); border-bottom: 1px solid #1E1E1D">
@@ -81,8 +53,6 @@
           </span>
           <div class="bo-header-actions" style="margin-left: auto; display: flex; align-items: center; gap: 10px">
             <button type="button" onClick="{{ openManual }}" style="padding: 12px 18px; border: 2px solid #363532; background: transparent; color: #C9A97E; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; white-space: nowrap" style-hover="border-color: #C9A97E">+ Turno manual</button>
-            <button type="button" onClick="{{ openPw }}" style="padding: 12px 16px; border: 2px solid #4E4A46; background: transparent; color: #6E675F; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; white-space: nowrap" style-hover="color: #EDE9E1">Acceso</button>
-            <button type="button" onClick="{{ logout }}" style="padding: 12px 16px; border: 2px solid #4E4A46; background: transparent; color: #6E675F; border-radius: 2px; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer" style-hover="color: #EDE9E1">Salir</button>
           </div>
         </div>
         <nav class="bo-nav" style="display: flex; gap: 2px; padding: 0 12px; overflow-x: auto">
@@ -514,46 +484,6 @@
         </div>
       </sc-if>
 
-      <sc-if value="{{ pwOpen }}" hint-placeholder-val="{{ false }}">
-        <div style="position: fixed; inset: 0; z-index: 60; background: rgba(5,5,4,.78); backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center; padding: 20px">
-          <div style="width: 100%; max-width: 420px; max-height: 92vh; overflow-y: auto; background: #141414; border: 2px solid #4E4A46; padding: 28px 26px 26px; animation: boFade .28s ease both">
-            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px">
-              <div>
-                <p style="margin: 0 0 8px; font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: #C9A97E">Seguridad</p>
-                <h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 28px; line-height: 1.05">Acceso al panel</h3>
-              </div>
-              <button type="button" onClick="{{ closePw }}" style="width: 34px; height: 34px; border: 2px solid #4E4A46; background: transparent; color: #8E8880; border-radius: 2px; cursor: pointer; font-size: 15px" style-hover="color: #EDE9E1">✕</button>
-            </div>
-            <div style="display: grid; gap: 12px; margin-bottom: 26px; padding-bottom: 26px; border-bottom: 1px solid #4E4A46">
-              <p style="margin: 0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">Cambiar usuario</p>
-              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
-                Usuario nuevo
-                <input type="text" value="{{ userNew }}" onChange="{{ setUserNew }}" placeholder="{{ currentUserLabel }}" style="padding: 14px 15px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
-              </label>
-              <p style="margin: 0; min-height: 16px; font-size: 12.5px; color: #C9A97E">{{ userError }}</p>
-              <button type="button" onClick="{{ saveUser }}" style="padding: 17px; border: 0; background: #C9A97E; color: #141414; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Guardar usuario</button>
-            </div>
-            <div style="display: grid; gap: 12px">
-              <p style="margin: 0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #8E8880">Cambiar contraseña</p>
-              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
-                Contraseña actual
-                <input type="password" value="{{ pwCurrent }}" onChange="{{ setPwCurrent }}" placeholder="••••••••" style="padding: 14px 15px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
-              </label>
-              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
-                Contraseña nueva
-                <input type="password" value="{{ pwNew }}" onChange="{{ setPwNew }}" placeholder="••••••••" style="padding: 14px 15px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
-              </label>
-              <label style="display: flex; flex-direction: column; gap: 7px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #8E8880">
-                Repetir contraseña nueva
-                <input type="password" value="{{ pwNew2 }}" onChange="{{ setPwNew2 }}" placeholder="••••••••" style="padding: 14px 15px; background: #141414; border: 2px solid #4E4A46; border-radius: 2px; color: #EDE9E1; font-size: 15px; letter-spacing: normal; text-transform: none" style-focus="border-color: #C9A97E; outline: none">
-              </label>
-              <p style="margin: 0; min-height: 16px; font-size: 12.5px; color: #C9A97E">{{ pwError }}</p>
-              <button type="button" onClick="{{ savePw }}" style="padding: 17px; border: 0; background: #C9A97E; color: #141414; border-radius: 2px; font-size: 12.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; cursor: pointer" style-hover="background: #E4CDA8">Guardar contraseña</button>
-            </div>
-          </div>
-        </div>
-      </sc-if>
-
       <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
         <div style="position: fixed; left: 20px; right: 20px; bottom: 20px; z-index: 70; display: flex; justify-content: center; pointer-events: none">
           <div style="display: flex; align-items: center; gap: 12px; padding: 15px 20px; background: #171716; border: 2px solid #363532; border-left: 3px solid #C9A97E; border-radius: 2px; font-size: 13.5px; color: #EDE9E1; box-shadow: 0 18px 44px rgba(0,0,0,.6); animation: boFade .25s ease both; max-width: 520px">
@@ -564,14 +494,12 @@
       </sc-if>
 
     </div>
-  </sc-if>
+  </div>
 
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
 const WA_LOCAL = "5493512524591";
-const ADMIN_USER = "laestudio";
-const ADMIN_PASS = "laestudio123";
 const DIRECCION = "Del Erquencho 180, Barrio Guiñazú, Córdoba";
 const DOW = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 const MONTH = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -587,12 +515,9 @@ const key = d => d.toISOString().slice(0, 10);
 
 class Component extends DCLogic {
   state = {
-    authed: false, user: "", pass: "", loginError: "", authDoc: null,
     tab: "turnero", mode: "day", cursor: 0,
     turnos: [], bloqueos: {}, toast: "",
     manualOpen: false, mNombre: "", mTel: "", mSvc: "corte", mDay: "", mTime: "10:00", mConfirmado: true, manualError: "",
-    pwOpen: false, pwCurrent: "", pwNew: "", pwNew2: "", pwError: "",
-    userNew: "", userError: "",
     config: null, cfgNewName: "", cfgNewDuration: 30, cfgNewPrice: "", cfgError: "",
     pendHorario: null, pendGenerales: null, pendServices: null,
     fijos: [], fNombre: "", fTel: "", fSvc: "", fDow: null, fTime: "", fError: "",
@@ -672,10 +597,6 @@ class Component extends DCLogic {
           });
         }
       }, err => console.error("[firebase] config listener", err));
-
-      this.db.collection("configAuth").doc("main").onSnapshot(doc => {
-        this.setState({ authDoc: doc.exists ? doc.data() : null });
-      }, err => console.error("[firebase] configAuth listener", err));
 
       this.db.collection("fijos").onSnapshot(snap => {
         this.setState({ fijos: snap.docs.map(d => Object.assign({ id: d.id }, d.data())) });
@@ -899,44 +820,6 @@ class Component extends DCLogic {
     this.flash("Cliente quitado de la lista");
   }
 
-  currentPass() { return (this.state.authDoc && this.state.authDoc.pass) || ADMIN_PASS; }
-  currentUser() { return (this.state.authDoc && this.state.authDoc.user) || ADMIN_USER; }
-
-  tryLogin() {
-    const s = this.state;
-    if (!s.user.trim() || !s.pass.trim()) this.setState({ loginError: "Ingresá usuario y contraseña." });
-    else if (s.user.trim() !== this.currentUser()) this.setState({ loginError: "Usuario incorrecto." });
-    else if (s.pass !== this.currentPass()) this.setState({ loginError: "Contraseña incorrecta." });
-    else this.setState({ authed: true, loginError: "" });
-  }
-
-  saveAuth(patch) {
-    const next = { user: this.currentUser(), pass: this.currentPass() };
-    Object.assign(next, patch);
-    if (this.fbReady) this.db.collection("configAuth").doc("main").set(next).catch(e => console.error("[firebase] saveAuth", e));
-    else this.setState({ authDoc: next });
-  }
-
-  tryChangeUser() {
-    const s = this.state;
-    if (!s.userNew.trim()) { this.setState({ userError: "Completá el nuevo usuario." }); return; }
-    if (s.userNew.trim().length < 3) { this.setState({ userError: "El usuario debe tener al menos 3 caracteres." }); return; }
-    this.saveAuth({ user: s.userNew.trim() });
-    this.setState({ userNew: "", userError: "" });
-    this.flash("Usuario actualizado");
-  }
-
-  tryChangePass() {
-    const s = this.state;
-    if (!s.pwCurrent.trim() || !s.pwNew.trim() || !s.pwNew2.trim()) { this.setState({ pwError: "Completá los tres campos." }); return; }
-    if (s.pwCurrent !== this.currentPass()) { this.setState({ pwError: "La contraseña actual no es correcta." }); return; }
-    if (s.pwNew.length < 4) { this.setState({ pwError: "La nueva contraseña debe tener al menos 4 caracteres." }); return; }
-    if (s.pwNew !== s.pwNew2) { this.setState({ pwError: "La nueva contraseña no coincide en ambos campos." }); return; }
-    this.saveAuth({ pass: s.pwNew });
-    this.setState({ pwOpen: false, pwCurrent: "", pwNew: "", pwNew2: "", pwError: "" });
-    this.flash("Contraseña actualizada");
-  }
-
   flash(msg) {
     this.setState({ toast: msg });
     clearTimeout(this._tt);
@@ -1145,13 +1028,6 @@ class Component extends DCLogic {
     const fDowVal = s.fDow != null ? s.fDow : cfg.days[0];
 
     return {
-      locked: !s.authed, authed: s.authed,
-      user: s.user, pass: s.pass, loginError: s.loginError,
-      setUser: e => this.setState({ user: e.target.value }),
-      setPass: e => this.setState({ pass: e.target.value }),
-      onLoginKey: e => { if (e.key === "Enter") this.tryLogin(); },
-      login: () => this.tryLogin(),
-      logout: () => this.setState({ authed: false, pass: "" }),
       tabs: tabs, kpis: kpis,
       isTurnero: s.tab === "turnero", isPendientes: s.tab === "pendientes",
       isDisponibilidad: s.tab === "disponibilidad",
@@ -1204,18 +1080,6 @@ class Component extends DCLogic {
         this.flash("Turno manual cargado · " + data.cliente + " " + data.time + " h");
       },
       hasToast: !!s.toast, toast: s.toast,
-      pwOpen: s.pwOpen,
-      openPw: () => this.setState({ pwOpen: true, pwCurrent: "", pwNew: "", pwNew2: "", pwError: "", userNew: "", userError: "" }),
-      closePw: () => this.setState({ pwOpen: false }),
-      pwCurrent: s.pwCurrent, pwNew: s.pwNew, pwNew2: s.pwNew2, pwError: s.pwError,
-      setPwCurrent: e => this.setState({ pwCurrent: e.target.value }),
-      setPwNew: e => this.setState({ pwNew: e.target.value }),
-      setPwNew2: e => this.setState({ pwNew2: e.target.value }),
-      savePw: () => this.tryChangePass(),
-      currentUserLabel: this.currentUser(),
-      userNew: s.userNew, userError: s.userError,
-      setUserNew: e => this.setState({ userNew: e.target.value }),
-      saveUser: () => this.tryChangeUser(),
       isConfig: s.tab === "config",
       cfgHourStart: pendH.hourStart, cfgHourEnd: pendH.hourEnd,
       cfgHourOptions: Array.from({ length: 15 }, (_, i) => i + 7).map(h => ({ value: h, label: h + ":00" })),
