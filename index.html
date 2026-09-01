@@ -413,7 +413,7 @@ const TERMS_PARAS = [
 ];
 
 class Component extends DCLogic {
-  state = { step: 1, svc: null, day: 0, slot: null, nombre: "", tel: "", turnos: [], fijos: [], exentos: [], config: null, copied: false, legal: null, miTurno: null, tick: 0 };
+  state = { step: 1, svc: null, day: 0, slot: null, nombre: "", tel: "", turnos: [], fijos: [], exentos: [], bloqueos: {}, config: null, copied: false, legal: null, miTurno: null, tick: 0 };
   fbReady = false;
 
   componentDidMount() {
@@ -443,6 +443,10 @@ class Component extends DCLogic {
       this.db.collection("fijos").onSnapshot(snap => {
         this.setState({ fijos: snap.docs.map(d => Object.assign({ id: d.id }, d.data())) });
       }, err => console.error("[firebase] fijos listener", err));
+
+      this.db.collection("bloqueos").doc("main").onSnapshot(doc => {
+        this.setState({ bloqueos: doc.exists ? doc.data() : {} });
+      }, err => console.error("[firebase] bloqueos listener", err));
 
       this.db.collection("exentos").onSnapshot(snap => {
         this.setState({ exentos: snap.docs.map(d => Object.assign({ id: d.id }, d.data())) });
@@ -570,13 +574,14 @@ class Component extends DCLogic {
     const fijos = s.fijos;
     const fijoTimes = day ? fijos.filter(f => f.dow === day.date.getDay()).map(f => f.time) : [];
     const busyTimes = day ? s.turnos.filter(t => t.dayKey === day.key && t.estado !== "cancelado").map(t => t.time) : [];
+    const blockedTimes = day ? (s.bloqueos[day.key] || []) : [];
     const now = new Date();
     const isToday = day && day.key === now.toISOString().slice(0, 10);
     const pastTimes = isToday ? this.timeList(day.date.getDay()).filter(t => {
       const [hh, mm] = t.split(":").map(Number);
       return hh < now.getHours() || (hh === now.getHours() && mm <= now.getMinutes());
     }) : [];
-    const taken = busyTimes.concat(fijoTimes, pastTimes);
+    const taken = busyTimes.concat(fijoTimes, blockedTimes, pastTimes);
     const senia = svc ? Math.round(svc.price / 2) : 0;
     const dayLabel = day ? DOW[day.date.getDay()] + " " + day.date.getDate() + " de " + MONTH[day.date.getMonth()] : "";
     const turnoLabel = day && s.slot ? dayLabel + ", " + s.slot + " h" : "—";
