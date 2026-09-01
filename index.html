@@ -503,11 +503,11 @@ class Component extends DCLogic {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     for (let i = 0; i < 14; i++) {
-      d.setDate(d.getDate() + 1);
       if (days.indexOf(d.getDay()) > -1) {
         const date = new Date(d);
         out.push({ key: date.toISOString().slice(0, 10), date: date });
       }
+      d.setDate(d.getDate() + 1);
     }
     return out;
   }
@@ -570,7 +570,13 @@ class Component extends DCLogic {
     const fijos = s.fijos;
     const fijoTimes = day ? fijos.filter(f => f.dow === day.date.getDay()).map(f => f.time) : [];
     const busyTimes = day ? s.turnos.filter(t => t.dayKey === day.key && t.estado !== "cancelado").map(t => t.time) : [];
-    const taken = busyTimes.concat(fijoTimes);
+    const now = new Date();
+    const isToday = day && day.key === now.toISOString().slice(0, 10);
+    const pastTimes = isToday ? this.timeList(day.date.getDay()).filter(t => {
+      const [hh, mm] = t.split(":").map(Number);
+      return hh < now.getHours() || (hh === now.getHours() && mm <= now.getMinutes());
+    }) : [];
+    const taken = busyTimes.concat(fijoTimes, pastTimes);
     const senia = svc ? Math.round(svc.price / 2) : 0;
     const dayLabel = day ? DOW[day.date.getDay()] + " " + day.date.getDate() + " de " + MONTH[day.date.getMonth()] : "";
     const turnoLabel = day && s.slot ? dayLabel + ", " + s.slot + " h" : "—";
