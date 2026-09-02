@@ -417,12 +417,19 @@ class Component extends DCLogic {
   fbReady = false;
 
   componentDidMount() {
-    this.setState({ miTurno: this.readMiTurno() });
+    const miTurno = this.readMiTurno();
+    this.setState({ miTurno: miTurno });
     this._tick = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 20000);
     this.initFirebase();
+    if (miTurno) setTimeout(() => this.scrollToTurnero(), 250);
   }
 
   componentWillUnmount() { clearInterval(this._tick); }
+
+  scrollToTurnero() {
+    const el = document.getElementById("turnero");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   initFirebase() {
     try {
@@ -698,9 +705,9 @@ class Component extends DCLogic {
       },
       goStep2: () => { if (ready1) this.setState({ step: 2 }); },
       goStep3: () => { if (ready2) this.setState({ step: 3 }); },
-      goStep4: () => { if (day && s.slot) this.persist(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim()); this.setState({ step: 4 }); },
+      goStep4: () => { if (day && s.slot) this.persist(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim()); this.setState({ step: 4 }); setTimeout(() => this.scrollToTurnero(), 50); },
       exento: exento, noExento: !exento,
-      confirmarSinSenia: () => { if (ready1 && ready2) { this.persist(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim(), "confirmado"); this.setState({ step: 4 }); } },
+      confirmarSinSenia: () => { if (ready1 && ready2) { this.persist(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim(), "confirmado"); this.setState({ step: 4 }); setTimeout(() => this.scrollToTurnero(), 50); } },
       back1: () => this.setState({ step: 1 }),
       reset: () => this.setState({ step: 1, svc: null, slot: null, nombre: "", tel: "" }),
       legalOpen: !!s.legal,
