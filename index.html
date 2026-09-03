@@ -523,11 +523,12 @@ class Component extends DCLogic {
     return out;
   }
 
-  notifyBarberConfirmado(data) {
+  notifyBarber(data) {
     const svc = this.cfg().services.find(x => x.id === data.svc);
     const d = new Date(data.dayKey + "T00:00:00");
     const label = DOW[d.getDay()] + " " + d.getDate() + " de " + MONTH[d.getMonth()];
-    const msg = "Turno confirmado: " + data.cliente + " (" + data.tel + "), " + (svc ? svc.name : data.svc) +
+    const prefix = data.estado === "confirmado" ? "Turno confirmado: " : "Nuevo turno (comprobante enviado, revisar): ";
+    const msg = prefix + data.cliente + " (" + data.tel + "), " + (svc ? svc.name : data.svc) +
       ", " + label + " a las " + data.time + " h.";
     window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
   }
@@ -538,7 +539,7 @@ class Component extends DCLogic {
       cliente: nombre || "Sin nombre", tel: tel || "—",
       svc: svc, estado: estado || "comprobante", origen: "Web"
     };
-    if (data.estado === "confirmado") this.notifyBarberConfirmado(data);
+    this.notifyBarber(data);
     if (this.fbReady) {
       this.db.collection("turnos").add(data).then(ref => {
         const turno = Object.assign({ id: ref.id }, data);
