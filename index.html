@@ -140,7 +140,7 @@
           </sc-for>
         </aside>
 
-        <div class="turnero-content" style="background: #141414; padding: 40px 38px 46px; min-height: 520px; min-width: 0">
+        <div id="turnero-content" class="turnero-content" style="background: #141414; padding: 40px 38px 46px; min-height: 520px; min-width: 0">
 
           <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
             <div style="animation: laFade .35s ease both">
@@ -427,7 +427,7 @@ class Component extends DCLogic {
   componentWillUnmount() { clearInterval(this._tick); }
 
   scrollToTurnero() {
-    const el = document.getElementById("turnero");
+    const el = document.getElementById("turnero-content") || document.getElementById("turnero");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
