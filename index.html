@@ -533,24 +533,42 @@ class Component extends DCLogic {
     window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
   }
 
-  persist(dayKey, time, svc, nombre, tel, estado) {
+  persistTurno(dayKey, time, svc, nombre, tel, estado) {
     const data = {
       dayKey: dayKey, time: time,
       cliente: nombre || "Sin nombre", tel: tel || "—",
-      svc: svc, estado: estado || "comprobante", origen: "Web"
+      svc: svc, estado: estado || "pendiente", origen: "Web"
     };
-    this.notifyBarber(data);
     if (this.fbReady) {
       this.db.collection("turnos").add(data).then(ref => {
         const turno = Object.assign({ id: ref.id }, data);
         this.writeLS("laestudio.miTurno", turno);
         this.setState({ miTurno: turno });
-      }).catch(e => console.error("[firebase] persist", e));
+      }).catch(e => console.error("[firebase] persistTurno", e));
     } else {
       const turno = Object.assign({ id: "w" + Date.now() }, data);
       this.writeLS("laestudio.miTurno", turno);
       this.setState(s => ({ turnos: s.turnos.concat([turno]), miTurno: turno }));
     }
+  }
+
+  persist(dayKey, time, svc, nombre, tel, estado) {
+    this.notifyBarber({ dayKey: dayKey, time: time, cliente: nombre || "Sin nombre", tel: tel || "—", svc: svc, estado: estado || "comprobante" });
+    this.persistTurno(dayKey, time, svc, nombre, tel, estado);
+  }
+
+  marcarComprobanteEnviado() {
+    const t = this.state.miTurno;
+    if (!t) return;
+    const data = Object.assign({}, t, { estado: "comprobante" });
+    this.notifyBarber(data);
+    this.writeLS("laestudio.miTurno", data);
+    if (this.fbReady && t.id) {
+      this.db.collection("turnos").doc(t.id).update({ estado: "comprobante" }).catch(e => console.error("[firebase] marcarComprobanteEnviado", e));
+    } else {
+      this.setState(s => ({ turnos: s.turnos.map(x => x.id === t.id ? Object.assign({}, x, { estado: "comprobante" }) : x) }));
+    }
+    this.setState({ miTurno: data });
   }
 
   cancelarMiTurno() {
@@ -705,8 +723,19 @@ class Component extends DCLogic {
         setTimeout(() => this.setState({ copied: false }), 2000);
       },
       goStep2: () => { if (ready1) this.setState({ step: 2 }); },
-      goStep3: () => { if (ready2) this.setState({ step: 3 }); },
-      goStep4: () => { if (day && s.slot) this.persist(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim()); this.setState({ step: 4 }); setTimeout(() => this.scrollToTurnero(), 50); },
+      goStep3: () => {
+        if (!ready2) return;
+        const mt = s.miTurno;
+        const yaReservado = mt && mt.dayKey === day.key && mt.time === s.slot && mt.svc === s.svc && mt.estado !== "cancelado";
+        if (!yaReservado && day && s.slot) this.persistTurno(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim(), "pendiente");
+        this.setState({ step: 3 });
+      },
+      goStep4: () => {
+        if (this.state.miTurno) this.marcarComprobanteEnviado();
+        else if (day && s.slot) this.persist(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim(), "comprobante");
+        this.setState({ step: 4 });
+        setTimeout(() => this.scrollToTurnero(), 50);
+      },
       exento: exento, noExento: !exento,
       confirmarSinSenia: () => { if (ready1 && ready2) { this.persist(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim(), "confirmado"); this.setState({ step: 4 }); setTimeout(() => this.scrollToTurnero(), 50); } },
       back1: () => this.setState({ step: 1 }),
