@@ -729,6 +729,7 @@ class Component extends DCLogic {
         const yaReservado = mt && mt.dayKey === day.key && mt.time === s.slot && mt.svc === s.svc && mt.estado !== "cancelado";
         if (!yaReservado && day && s.slot) this.persistTurno(day.key, s.slot, s.svc, s.nombre.trim(), s.tel.trim(), "pendiente");
         this.setState({ step: 3 });
+        setTimeout(() => this.scrollToTurnero(), 50);
       },
       goStep4: () => {
         if (this.state.miTurno) this.marcarComprobanteEnviado();
